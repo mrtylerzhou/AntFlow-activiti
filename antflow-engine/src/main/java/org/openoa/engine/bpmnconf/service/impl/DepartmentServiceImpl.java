@@ -8,8 +8,12 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.mapper.DepartmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname DepartmentServiceImpl
@@ -43,17 +47,52 @@ public class DepartmentServiceImpl implements AfDepartmentService {
 
     @Override
     public List<Department> queryByNameFuzzy(String name){
-        return departmentMapper.queryByNameFuzzy(name);
+        List<Department> matched = departmentMapper.queryByNameFuzzy(name);
+        if(matched == null || matched.isEmpty()){
+            return java.util.Collections.emptyList();
+        }
+        //补祖先链: 收集匹配记录 path 的全部前缀(如 /1/2/3 -> /1, /1/2), 一次查出祖先并合并返回
+        java.util.Set<String> ancestorPaths = new java.util.LinkedHashSet<>();
+        for (Department d : matched) {
+            String path = d.getPath();
+            if (!StringUtils.hasText(path)) {
+                continue;
+            }
+            String[] segs = path.split("/");
+            StringBuilder sb = new StringBuilder();
+            for (int i = 1; i < segs.length - 1; i++) {
+                sb.append('/').append(segs[i]);
+                ancestorPaths.add(sb.toString());
+            }
+        }
+        if (!ancestorPaths.isEmpty()) {
+            List<Department> ancestors = departmentMapper.queryByPaths(new ArrayList<>(ancestorPaths));
+            Map<Integer, Department> merged = new LinkedHashMap<>();
+            for (Department a : ancestors) {
+                merged.putIfAbsent(a.getId(), a);
+            }
+            for (Department m : matched) {
+                merged.putIfAbsent(m.getId(), m);
+            }
+            return new ArrayList<>(merged.values());
+        }
+        return matched;
     }
 
     @Override
     public List<Department> getDepartmentsByParentId(Integer parentId){
-        return departmentMapper.getDepartmentsByParentId(parentId);
-    }
-
-    @Override
-    public List<Department> getAllDepartments(){
-        return departmentMapper.getAllDepartments();
+        //根节点: path 深度=1
+        if(parentId == null){
+            return departmentMapper.getRootDepartments();
+        }
+        //子节点: 先查父部门 path, 再按 path 前缀+深度查询直接子级
+        Department parent = departmentMapper.getDepartmentById(parentId);
+        if(parent == null || !StringUtils.hasText(parent.getPath())){
+            return java.util.Collections.emptyList();
+        }
+        String parentPath = parent.getPath();
+        int depth = (int) parentPath.chars().filter(ch -> ch == '/').count();
+        return departmentMapper.getChildrenByParentPath(parentPath, depth);
     }
 
     @Override

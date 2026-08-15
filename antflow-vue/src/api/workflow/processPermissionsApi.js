@@ -63,13 +63,6 @@ export function queryDepartmentsByName(name) {
 }
 
 /**
- * 查询全部部门(含path/level, 前端按path组装部门树)
- */
-export function getAllDepartments() {
-  return http.get(`${baseUrl}/department/getAllDepartments`, { headers });
-}
-
-/**
  * 角色列表(授权对象选择用,全量)
  */
 export function getRoleInfo() {

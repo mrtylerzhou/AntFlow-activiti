@@ -20,13 +20,13 @@
     </select>
 
     <select id="getDepartmentById" resultType="org.openoa.base.entity.Department">
-        select id,name,short_name,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
+        select id,name,short_name,parent_id,path,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
         from t_department
         where id = #{id}
     </select>
 
     <select id="getByIds" resultType="org.openoa.base.entity.Department">
-        select id,name,short_name,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
+        select id,name,short_name,parent_id,path,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
         from t_department
         <where>
             id in
@@ -37,7 +37,7 @@
     </select>
 
     <select id="queryByNameFuzzy" resultType="org.openoa.base.entity.Department">
-        select id,name,short_name,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
+        select id,name,short_name,parent_id,path,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
         from t_department
         <where>
             <if test="name != null and name != ''">
@@ -46,20 +46,39 @@
         </where>
     </select>
 
-    <select id="getDepartmentsByParentId" resultType="org.openoa.base.entity.Department">
-        select id,name,short_name,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
-        from t_department
-        <where>
-            <if test="parentId != null">
-                parent_id = #{parentId}
-            </if>
-        </where>
+    <select id="getRootDepartments" resultType="org.openoa.base.entity.Department">
+        select t.id,t.name,t.short_name,t.parent_id,t.path,t.level,t.sort,t.is_del,t.is_hide,t.create_user,t.create_time,t.update_time,t.update_user,
+               case when exists(select 1 from t_department c
+                                where c.path like concat(t.path, '/%')
+                                  and (length(c.path) - length(replace(c.path, '/', ''))) = (length(t.path) - length(replace(t.path, '/', ''))) + 1)
+                    then 0 else 1 end as is_leaf
+        from t_department t
+        where t.path is not null
+          and (length(t.path) - length(replace(t.path, '/', ''))) = 1
+        order by t.sort asc, t.id asc
     </select>
 
-    <select id="getAllDepartments" resultType="org.openoa.base.entity.Department">
+    <select id="getChildrenByParentPath" resultType="org.openoa.base.entity.Department">
+        select t.id,t.name,t.short_name,t.parent_id,t.path,t.level,t.sort,t.is_del,t.is_hide,t.create_user,t.create_time,t.update_time,t.update_user,
+               case when exists(select 1 from t_department c
+                                where c.path like concat(t.path, '/%')
+                                  and (length(c.path) - length(replace(c.path, '/', ''))) = (length(t.path) - length(replace(t.path, '/', ''))) + 1)
+                    then 0 else 1 end as is_leaf
+        from t_department t
+        where t.path like concat(#{parentPath}, '/%')
+          and (length(t.path) - length(replace(t.path, '/', ''))) = #{parentDepth} + 1
+        order by t.sort asc, t.id asc
+    </select>
+
+    <select id="queryByPaths" resultType="org.openoa.base.entity.Department">
         select id,name,short_name,parent_id,path,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
         from t_department
-        order by level asc, sort asc, id asc
+        <where>
+            path in
+            <foreach collection="paths" item="p" open="(" separator="," close=")">
+                #{p}
+            </foreach>
+        </where>
     </select>
 
     <select id="getDepartmentByCompanyId" resultType="org.openoa.base.entity.Department">

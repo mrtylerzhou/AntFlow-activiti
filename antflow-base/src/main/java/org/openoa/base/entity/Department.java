@@ -44,6 +44,11 @@ public class Department {
      * department path, e.g. /1/2/3 (真实层级关系所在, parent_id 可能不可靠)
      */
     private String path;
+    /**
+     * 是否叶子节点(非表字段, 接口返回供前端懒加载判断)
+     */
+    @TableField(exist = false)
+    private Boolean isLeaf;
 
     /**
      * department level

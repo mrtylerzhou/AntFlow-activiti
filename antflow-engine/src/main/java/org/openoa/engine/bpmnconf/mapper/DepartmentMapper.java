@@ -23,12 +23,23 @@ public interface DepartmentMapper  {
 
     List<Department> queryByNameFuzzy(@Param("name") String name);
 
-    List<Department> getDepartmentsByParentId(@Param("parentId") Integer parentId);
+    /**
+     * 树懒加载-根节点: path 深度=1 的部门
+     */
+    List<Department> getRootDepartments();
 
     /**
-     * 查询全部部门(含path/level, 供前端组装部门树)
+     * 树懒加载-子节点: path 以父path开头且深度=父深度+1
+     *
+     * @param parentPath 父部门 path
+     * @param parentDepth 父部门 path 深度(段数)
      */
-    List<Department> getAllDepartments();
+    List<Department> getChildrenByParentPath(@Param("parentPath") String parentPath, @Param("parentDepth") Integer parentDepth);
+
+    /**
+     * 按 path 集合批量查询部门(搜索补祖先链用)
+     */
+    List<Department> queryByPaths(@Param("paths") List<String> paths);
 
     List<Department> getDepartmentByCompanyId(@Param("companyId") String companyId);
 

@@ -1,5 +1,5 @@
 <template>
-    <!-- 选择部门(树形结构, 支持勾选任意部门节点与关键字搜索) -->
+    <!-- 选择部门(树形懒加载, 默认展示两级, 支持关键字搜索树内高亮) -->
     <el-dialog title="选择部门" v-model="visibleDialog" width="640px" append-to-body :before-close="handleClose">
         <el-form :model="qform" ref="queryRef" :inline="true">
             <el-form-item label="部门名称">
@@ -12,17 +12,22 @@
             </el-form-item>
         </el-form>
 
-        <!-- 搜索结果(搜索模式) -->
-        <el-table v-if="searchMode" v-loading="loading" :data="searchList" height="320px"
-            @selection-change="handleSearchSelection">
-            <el-table-column type="selection" width="50px" />
-            <el-table-column prop="name" label="部门名称" :show-overflow-tooltip="true" />
-        </el-table>
+        <!-- 浏览模式: 树形懒加载(展开节点时按需加载子级, 默认展开根展示两级) -->
+        <div v-if="!searchMode" class="dept-tree-wrap" v-loading="loading">
+            <el-tree ref="treeRef" lazy :load="loadNode" :props="treeProps" node-key="id" show-checkbox
+                check-strictly :default-expanded-keys="defaultExpandedKeys" @check="handleTreeCheck" />
+        </div>
 
-        <!-- 树形结构(浏览模式, 全量加载后按path组装) -->
+        <!-- 搜索模式: 结果仍以树展示, 命中节点高亮(后端已补祖先链) -->
         <div v-else class="dept-tree-wrap" v-loading="loading">
-            <el-tree ref="treeRef" :data="treeData" :props="treeProps" node-key="id" show-checkbox
-                check-strictly default-expand-all @check="handleTreeCheck" />
+            <el-tree ref="searchTreeRef" :data="searchTreeData" :props="treeProps" node-key="id" show-checkbox
+                check-strictly default-expand-all @check="handleSearchTreeCheck">
+                <template #default="{ data }">
+                    <span :class="{ 'search-hit': data.name && qform.name && data.name.includes(qform.name) }">
+                        {{ data.name }}
+                    </span>
+                </template>
+            </el-tree>
         </div>
 
         <!-- 已选部门 -->
@@ -44,8 +49,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
-import { getAllDepartments, queryDepartmentsByName } from "@/api/workflow/processPermissionsApi";
+import { ref, computed } from "vue";
+import { getDepartmentsByParentId, queryDepartmentsByName } from "@/api/workflow/processPermissionsApi";
 const { proxy } = getCurrentInstance();
 
 const props = defineProps({
@@ -56,10 +61,11 @@ const props = defineProps({
 const emits = defineEmits(["update:visible", "update:checkedData", "change"]);
 
 const treeRef = ref(null);
+const searchTreeRef = ref(null);
 const loading = ref(false);
 const searchMode = ref(false);
-const searchList = ref([]);
-const treeData = ref([]); // 全量部门组装后的树
+const searchTreeData = ref([]); // 搜索结果树(匹配节点+祖先链)
+const defaultExpandedKeys = ref([]); // 懒加载默认展开根节点(展示两级)
 const selectedDepts = ref([]);
 
 const qform = ref({ name: undefined });
@@ -67,6 +73,7 @@ const qform = ref({ name: undefined });
 const treeProps = {
     label: "name",
     children: "children",
+    isLeaf: "isLeaf",
 };
 
 const visibleDialog = computed({
@@ -78,15 +85,30 @@ const visibleDialog = computed({
     },
 });
 
-/** 打开弹窗时加载全量部门并组装树 */
-watch(() => props.visible, (v) => {
-    if (v) loadTree();
-});
+/** 树懒加载: 根节点(parentId为空, path深度=1) + 展开时按需加载子级 */
+const loadNode = (node, resolve) => {
+    const parentId = node && node.level > 0 ? node.data.id : undefined;
+    loading.value = true;
+    getDepartmentsByParentId(parentId).then((res) => {
+        loading.value = false;
+        const deps = (res.data ?? []).map((d) => ({
+            id: String(d.id),
+            name: d.name,
+            path: d.path,
+            isLeaf: d.isLeaf === true || d.isLeaf === 1,
+        }));
+        resolve(deps);
+        // 根节点加载完成后默认展开, 展示两级
+        if (node.level === 0) {
+            defaultExpandedKeys.value = deps.map((d) => d.id);
+        }
+    }).catch(() => {
+        loading.value = false;
+        resolve([]);
+    });
+};
 
-/**
- * 按 path 组装部门树
- * 注意: demo 数据的 parent_id 字段不可靠(指向比自己大的id), 真实层级关系在 path 字段(/1 -> /1/2 -> /1/2/3 ...)
- */
+/** 按 path 组装部门树(搜索结果用, demo 数据 parent_id 不可靠, 真实层级在 path) */
 function buildDeptTree(list) {
     const pathMap = {};
     const nodes = {};
@@ -114,28 +136,7 @@ function buildDeptTree(list) {
     return roots;
 }
 
-function loadTree() {
-    loading.value = true;
-    getAllDepartments().then((res) => {
-        treeData.value = buildDeptTree(res.data ?? []);
-        loading.value = false;
-    }).catch(() => {
-        loading.value = false;
-        proxy.$modal.msgError("加载部门失败");
-    });
-}
-
-/** 勾选任意部门节点, 同步已选列表 */
-const handleTreeCheck = () => {
-    syncFromTree();
-};
-
-const syncFromTree = () => {
-    const checked = treeRef.value?.getCheckedNodes() ?? [];
-    selectedDepts.value = checked.map((n) => ({ id: n.id, name: n.name }));
-};
-
-/** 搜索模式: 按名称模糊查询 */
+/** 搜索: 后端返回匹配部门+祖先链, 前端组树展示(保持树形态, 命中节点高亮) */
 const handleQuery = () => {
     if (!qform.value.name) {
         searchMode.value = false;
@@ -144,7 +145,7 @@ const handleQuery = () => {
     loading.value = true;
     queryDepartmentsByName(qform.value.name).then((res) => {
         searchMode.value = true;
-        searchList.value = (res.data ?? []).map((d) => ({ id: String(d.id), name: d.name }));
+        searchTreeData.value = buildDeptTree(res.data ?? []);
         loading.value = false;
     }).catch(() => {
         loading.value = false;
@@ -155,17 +156,30 @@ const handleQuery = () => {
 const resetQuery = () => {
     qform.value.name = undefined;
     searchMode.value = false;
+    searchTreeData.value = [];
 };
 
-const handleSearchSelection = (selection) => {
-    selectedDepts.value = selection;
+/** 浏览树勾选(任意层级可选) */
+const handleTreeCheck = () => {
+    syncFromTree(treeRef.value);
+};
+
+/** 搜索树勾选 */
+const handleSearchTreeCheck = () => {
+    syncFromTree(searchTreeRef.value);
+};
+
+const syncFromTree = (tree) => {
+    const checked = tree?.getCheckedNodes() ?? [];
+    selectedDepts.value = checked.map((n) => ({ id: n.id, name: n.name }));
 };
 
 const removeSelected = (idx) => {
     selectedDepts.value.splice(idx, 1);
-    //同步树勾选状态(仅浏览模式)
-    if (!searchMode.value && treeRef.value) {
-        selectedDepts.value.forEach((d) => treeRef.value?.setChecked(d.id, true));
+    //同步当前模式树的勾选状态
+    const tree = searchMode.value ? searchTreeRef.value : treeRef.value;
+    if (tree) {
+        selectedDepts.value.forEach((d) => tree.setChecked(d.id, true));
     }
 };
 
@@ -177,8 +191,11 @@ const saveDialog = () => {
 const handleClose = () => {
     searchMode.value = false;
     qform.value.name = undefined;
-    searchList.value = [];
+    searchTreeData.value = [];
     selectedDepts.value = [];
+    //清空两棵树的历史勾选, 避免重开弹窗状态残留
+    treeRef.value?.setCheckedKeys([]);
+    searchTreeRef.value?.setCheckedKeys([]);
     emits("update:visible", false);
 };
 </script>
@@ -190,6 +207,11 @@ const handleClose = () => {
     border: 1px solid #e4e7ed;
     border-radius: 4px;
     padding: 6px;
+}
+
+.search-hit {
+    color: #e6a23c;
+    font-weight: 600;
 }
 
 .selected-box {

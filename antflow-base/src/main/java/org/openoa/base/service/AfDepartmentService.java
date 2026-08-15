@@ -56,13 +56,6 @@ public interface AfDepartmentService {
     List<Department> getDepartmentsByParentId(Integer parentId);
 
     /**
-     * 查询全部部门(含path/level, 供前端组装部门树)
-     *
-     * @return 全部部门集合
-     */
-    List<Department> getAllDepartments();
-
-    /**
      * 根据企业id查询部门列表
      *
      * @param companyId 企业id
