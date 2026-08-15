@@ -12,13 +12,15 @@ const headers = {
 /**
  * 分页列表
  * @param {*} pageDto
- * @param {*} query {formCode, permissionsType, objectName}
+ * @param {*} query {formCode, permissionsType, objectType, objectId, objectName}
  */
 export function getProcessPermissionsListPage(pageDto, query) {
   let data = {
     pageDto: pageDto,
     formCode: query?.formCode,
     permissionsType: query?.permissionsType,
+    objectType: query?.objectType,
+    objectId: query?.objectId,
     objectName: query?.objectName,
   };
   return http.post(`${baseUrl}/processPermissions/listPage`, data, { headers });
@@ -63,8 +65,23 @@ export function queryDepartmentsByName(name) {
 }
 
 /**
- * 角色列表(授权对象选择用,全量)
+ * 人员名称模糊查询(搜索栏授权对象下拉用)
+ * @param {*} userName
  */
-export function getRoleInfo() {
-  return http.get(`${baseUrl}/user/getRoleInfo`, { headers });
+export function queryUsersByName(userName) {
+  return http.get(`${baseUrl}/user/queryUserByNameFuzzy`, {
+    params: { userName },
+    headers,
+  });
+}
+
+/**
+ * 角色列表(全量不带name; 搜索时传name模糊查询)
+ * @param {*} name 角色名称关键字(可选)
+ */
+export function getRoleInfo(name) {
+  return http.get(`${baseUrl}/user/getRoleInfo`, {
+    params: { name: name || undefined },
+    headers,
+  });
 }

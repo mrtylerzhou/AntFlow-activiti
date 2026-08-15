@@ -76,6 +76,16 @@ const treeProps = {
     isLeaf: "isLeaf",
 };
 
+//已加载子级缓存: 'root'=根列表; 根id=该根的直接子级列表(初始请求一次带两级, 展开根零请求)
+const loadedCache = new Map();
+
+const depthOf = (path) => (path || "").split("/").filter(Boolean).length;
+const parentPathOf = (path) => {
+    const seg = (path || "").split("/").filter(Boolean);
+    seg.pop();
+    return "/" + seg.join("/");
+};
+
 const visibleDialog = computed({
     get() {
         return props.visible;
@@ -85,9 +95,15 @@ const visibleDialog = computed({
     },
 });
 
-/** 树懒加载: 根节点(parentId为空, path深度=1) + 展开时按需加载子级 */
+/** 树懒加载: 初始一次请求带两级(根+直接子级), 后续展开按需加载 */
 const loadNode = (node, resolve) => {
     const parentId = node && node.level > 0 ? node.data.id : undefined;
+    const cacheKey = parentId ?? "root";
+    //命中缓存直接返回(初始根展开、重复展开不重复请求)
+    if (loadedCache.has(cacheKey)) {
+        resolve(loadedCache.get(cacheKey));
+        return;
+    }
     loading.value = true;
     getDepartmentsByParentId(parentId).then((res) => {
         loading.value = false;
@@ -97,10 +113,26 @@ const loadNode = (node, resolve) => {
             path: d.path,
             isLeaf: d.isLeaf === true || d.isLeaf === 1,
         }));
-        resolve(deps);
-        // 根节点加载完成后默认展开, 展示两级
-        if (node.level === 0) {
-            defaultExpandedKeys.value = deps.map((d) => d.id);
+        if (parentId === undefined) {
+            //初始响应含两级: 深度1=根, 深度2=根的直接子级, 拆分缓存
+            const roots = deps.filter((d) => depthOf(d.path) === 1);
+            const childrenByRoot = new Map();
+            deps.filter((d) => depthOf(d.path) === 2).forEach((d) => {
+                const parentPath = parentPathOf(d.path);
+                const root = roots.find((r) => r.path === parentPath);
+                if (root) {
+                    if (!childrenByRoot.has(root.id)) childrenByRoot.set(root.id, []);
+                    childrenByRoot.get(root.id).push(d);
+                }
+            });
+            loadedCache.set("root", roots);
+            childrenByRoot.forEach((children, rootId) => loadedCache.set(rootId, children));
+            resolve(roots);
+            //默认展开根, 从缓存直接渲染第二级(不再发第二次请求)
+            defaultExpandedKeys.value = roots.map((r) => r.id);
+        } else {
+            loadedCache.set(cacheKey, deps);
+            resolve(deps);
         }
     }).catch(() => {
         loading.value = false;
@@ -193,6 +225,7 @@ const handleClose = () => {
     qform.value.name = undefined;
     searchTreeData.value = [];
     selectedDepts.value = [];
+    loadedCache.clear(); //下次打开弹窗重新拉取最新两级
     //清空两棵树的历史勾选, 避免重开弹窗状态残留
     treeRef.value?.setCheckedKeys([]);
     searchTreeRef.value?.setCheckedKeys([]);

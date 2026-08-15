@@ -68,8 +68,12 @@ public class ProcessPermissionsBizServiceImpl {
         QueryWrapper<BpmProcessPermissions> qw = new QueryWrapper<>();
         qw.like(StringUtils.hasText(req.getFormCode()), "process_key", req.getFormCode());
         qw.eq(req.getPermissionsType() != null, "permissions_type", req.getPermissionsType());
-        //授权对象名称关键字 -> 后置查询用户/部门/角色 id 集合(不 join demo 表)
-        if (StringUtils.hasText(req.getObjectName())) {
+        //授权对象精确过滤: 下拉搜索选中后传 objectType + objectId(优先于 objectName)
+        if (StringUtils.hasText(req.getObjectId())) {
+            qw.eq(req.getObjectType() != null, "object_type", req.getObjectType());
+            qw.eq("object_id", req.getObjectId());
+        } else if (StringUtils.hasText(req.getObjectName())) {
+            //授权对象名称关键字 -> 后置查询用户/部门/角色 id 集合(不 join demo 表)
             List<String> userIds = resolveUserIdsByName(req.getObjectName());
             List<String> depIds = resolveDepIdsByName(req.getObjectName());
             List<String> roleIds = resolveRoleIdsByName(req.getObjectName());

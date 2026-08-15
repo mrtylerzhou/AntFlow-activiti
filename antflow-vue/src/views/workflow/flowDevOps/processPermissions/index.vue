@@ -2,9 +2,11 @@
     <div class="app-container">
         <div class="query-box">
             <el-form :model="query" ref="queryRef" :inline="true" v-show="showSearch">
-                <el-form-item label="流程formCode" prop="formCode">
-                    <el-input v-model="query.formCode" placeholder="请输入流程formCode关键字" clearable style="width: 200px"
-                        @keyup.enter="handleQuery" />
+                <el-form-item label="流程" prop="formCode">
+                    <el-select v-model="query.formCode" placeholder="请选择流程" clearable filterable style="width: 220px">
+                        <el-option v-for="item in confOptions" :key="item.formCode"
+                            :label="`${item.bpmnName} [${item.formCode}]`" :value="item.formCode" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="权限类型" prop="permissionsType">
                     <el-select v-model="query.permissionsType" placeholder="请选择权限类型" clearable style="width: 140px">
@@ -12,9 +14,28 @@
                             :value="item.value" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="授权对象" prop="objectName">
-                    <el-input v-model="query.objectName" placeholder="请输入人员/部门/角色名称关键字" clearable style="width: 200px"
-                        @keyup.enter="handleQuery" />
+                <el-form-item label="授权对象类型" prop="objectType">
+                    <el-select v-model="query.objectType" style="width: 90px" @change="handleQueryObjectTypeChange">
+                        <el-option v-for="item in objectTypeOptions" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="授权对象" prop="objectId">
+                    <!-- 人员下拉(远程搜索) -->
+                    <el-select v-if="query.objectType === 1" v-model="query.objectId" placeholder="请选择人员" clearable filterable remote
+                        :remote-method="remoteQueryUsers" :loading="userLoading" style="width: 180px">
+                        <el-option v-for="item in userOptions" :key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
+                    <!-- 部门下拉(远程搜索) -->
+                    <el-select v-else-if="query.objectType === 2" v-model="query.objectId" placeholder="请选择部门" clearable filterable remote
+                        :remote-method="remoteQueryDepts" :loading="deptLoading" style="width: 180px">
+                        <el-option v-for="item in deptOptions" :key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
+                    <!-- 角色下拉(远程搜索) -->
+                    <el-select v-else v-model="query.objectId" placeholder="请选择角色" clearable filterable remote
+                        :remote-method="remoteQueryRoles" :loading="roleLoading" style="width: 180px">
+                        <el-option v-for="item in roleOptions" :key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -147,6 +168,7 @@ import SelectRoleDialog from "@/components/Workflow/dialog/selectRoleDialog.vue"
 import { getAutoApproveActiveConfList } from "@/api/workflow/autoApproveApi";
 import {
     getProcessPermissionsListPage, saveProcessPermissions, deleteProcessPermission,
+    queryUsersByName, queryDepartmentsByName, getRoleInfo,
 } from "@/api/workflow/processPermissionsApi";
 const { proxy } = getCurrentInstance();
 
@@ -179,7 +201,14 @@ const showSearch = ref(true);
 const total = ref(0);
 const open = ref(false);
 const title = ref("");
-const confOptions = ref([]);
+const confOptions = ref([]); //流程下拉(搜索栏+新增弹窗共用)
+//授权对象下拉(远程搜索)
+const userOptions = ref([]);
+const deptOptions = ref([]);
+const roleOptions = ref([]);
+const userLoading = ref(false);
+const deptLoading = ref(false);
+const roleLoading = ref(false);
 const userSelectedList = ref([]); // {id,name}
 const deptSelectedList = ref([]); // {id,name}
 const roleSelectedList = ref([]); // {id,name}
@@ -192,7 +221,8 @@ const data = reactive({
     query: {
         formCode: undefined,
         permissionsType: undefined,
-        objectName: undefined,
+        objectType: 1, // 1=人员 2=部门 3=角色(默认人员)
+        objectId: undefined,
     },
     pageDto: {
         page: 1,
@@ -213,6 +243,10 @@ const { query, pageDto, form, rules } = toRefs(data);
 
 onMounted(() => {
     getList();
+    //流程下拉数据(搜索栏+新增弹窗共用)
+    getAutoApproveActiveConfList().then(res => {
+        confOptions.value = res.data ?? [];
+    });
 });
 
 /** 查询列表 */
@@ -235,8 +269,52 @@ function handleQuery() {
 
 /** 重置按钮操作 */
 function resetQuery() {
-    query.value = { formCode: undefined, permissionsType: undefined, objectName: undefined };
+    query.value = { formCode: undefined, permissionsType: undefined, objectType: 1, objectId: undefined };
+    userOptions.value = [];
+    deptOptions.value = [];
+    roleOptions.value = [];
     handleQuery();
+}
+
+/** 授权对象类型切换: 清空已选对象 */
+function handleQueryObjectTypeChange() {
+    query.value.objectId = undefined;
+    userOptions.value = [];
+    deptOptions.value = [];
+    roleOptions.value = [];
+}
+
+/** 人员下拉远程搜索 */
+function remoteQueryUsers(name) {
+    userLoading.value = true;
+    queryUsersByName(name).then(res => {
+        userOptions.value = (res.data ?? []).map(u => ({ id: String(u.id), name: u.name }));
+        userLoading.value = false;
+    }).catch(() => {
+        userLoading.value = false;
+    });
+}
+
+/** 部门下拉远程搜索 */
+function remoteQueryDepts(name) {
+    deptLoading.value = true;
+    queryDepartmentsByName(name).then(res => {
+        deptOptions.value = (res.data ?? []).map(d => ({ id: String(d.id), name: d.name }));
+        deptLoading.value = false;
+    }).catch(() => {
+        deptLoading.value = false;
+    });
+}
+
+/** 角色下拉远程搜索 */
+function remoteQueryRoles(name) {
+    roleLoading.value = true;
+    getRoleInfo(name).then(res => {
+        roleOptions.value = (res.data ?? []).map(r => ({ id: String(r.id), name: r.name }));
+        roleLoading.value = false;
+    }).catch(() => {
+        roleLoading.value = false;
+    });
 }
 
 /** 新增按钮操作 */
@@ -250,9 +328,6 @@ async function handleAdd() {
     deptSelectedList.value = [];
     roleSelectedList.value = [];
     title.value = "新增流程权限";
-    await getAutoApproveActiveConfList().then(res => {
-        confOptions.value = res.data ?? [];
-    });
     open.value = true;
     //防止历史校验错误状态残留, 打开弹窗后清除校验提示
     nextTick(() => proxy.$refs["formRef"]?.clearValidate());

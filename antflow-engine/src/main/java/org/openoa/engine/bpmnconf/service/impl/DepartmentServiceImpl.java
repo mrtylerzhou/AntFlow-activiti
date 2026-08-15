@@ -81,9 +81,9 @@ public class DepartmentServiceImpl implements AfDepartmentService {
 
     @Override
     public List<Department> getDepartmentsByParentId(Integer parentId){
-        //根节点: path 深度=1
+        //初始两级: path 深度 1~2(根+根的直接子级), 前端一次请求渲染两级
         if(parentId == null){
-            return departmentMapper.getRootDepartments();
+            return departmentMapper.getTopTwoLevels();
         }
         //子节点: 先查父部门 path, 再按 path 前缀+深度查询直接子级
         Department parent = departmentMapper.getDepartmentById(parentId);

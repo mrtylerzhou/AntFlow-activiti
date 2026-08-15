@@ -24,9 +24,9 @@ public interface DepartmentMapper  {
     List<Department> queryByNameFuzzy(@Param("name") String name);
 
     /**
-     * 树懒加载-根节点: path 深度=1 的部门
+     * 树懒加载-初始两级: path 深度 1~2 的部门(根+根的直接子级, 前端一次请求渲染两级)
      */
-    List<Department> getRootDepartments();
+    List<Department> getTopTwoLevels();
 
     /**
      * 树懒加载-子节点: path 以父path开头且深度=父深度+1

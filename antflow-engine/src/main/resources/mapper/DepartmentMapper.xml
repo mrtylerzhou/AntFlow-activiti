@@ -46,7 +46,7 @@
         </where>
     </select>
 
-    <select id="getRootDepartments" resultType="org.openoa.base.entity.Department">
+    <select id="getTopTwoLevels" resultType="org.openoa.base.entity.Department">
         select t.id,t.name,t.short_name,t.parent_id,t.path,t.level,t.sort,t.is_del,t.is_hide,t.create_user,t.create_time,t.update_time,t.update_user,
                case when exists(select 1 from t_department c
                                 where c.path like concat(t.path, '/%')
@@ -54,8 +54,8 @@
                     then 0 else 1 end as is_leaf
         from t_department t
         where t.path is not null
-          and (length(t.path) - length(replace(t.path, '/', ''))) = 1
-        order by t.sort asc, t.id asc
+          and (length(t.path) - length(replace(t.path, '/', ''))) between 1 and 2
+        order by (length(t.path) - length(replace(t.path, '/', ''))) asc, t.sort asc, t.id asc
     </select>
 
     <select id="getChildrenByParentPath" resultType="org.openoa.base.entity.Department">

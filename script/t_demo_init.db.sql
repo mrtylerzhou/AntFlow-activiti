@@ -253,13 +253,16 @@ INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (18, 16, 4);
 -- ----------------------------
 -- Records of t_department --表字段很多,大部分是为了demo展示使用,引擎用到的核心数据字段是id和name,其它的都是非必须
 -- ----------------------------
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (1, '一级部门', NULL, NULL, '/1', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (2, '二级部门', NULL, 3, '/1/2', 2, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (3, '三级部门', NULL, 4, '/1/2/3', 3, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (4, '四级部门', NULL, 5, '/1/2/3/4', 4, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (5, '五级部门', NULL, 6, '/1/2/3/4/5', 5, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (6, '六级部门', NULL, 7, '/1/2/3/4/5/6', 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (7, '七级部门', NULL, 8, '/1/2/3/4/5/6/7', 7, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (8, '市场部', NULL, 9, '/1/2/3/4/5/6/7/8', 8, 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (9, '销售部', NULL, 9, '/1/2/3/4/5/6/7/8/9', 9, 9, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `t_department` (`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`,
+                            `tenant_id`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`)
+VALUES (1, '总公司', NULL, NULL, '/1', 1, 1, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL),
+       (2, '研发一部', NULL, 1, '/1/2', 2, 2, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL),
+       (3, '后端研发部', NULL, 2, '/1/2/3', 3, 3, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL),
+       (4, 'JAVA组', NULL, 3, '/1/2/3/4', 4, 4, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL),
+       (5, '.NET组', NULL, 4, '/1/2/3/4/5', 5, 5, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL),
+       (6, 'C++组', NULL, 5, '/1/2/3/4/5/6', 6, 6, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL),
+       (7, 'RUST组', NULL, 6, '/1/2/3/4/5/6/7', 7, 7, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL),
+       (8, '市场部', NULL, 7, '/1/2/3/4/5/6/7/8', 8, 8, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL),
+       (9, '销售部', NULL, 8, '/1/2/3/4/5/6/7/8/9', 9, 9, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL);
+
 
