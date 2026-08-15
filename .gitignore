@@ -36,3 +36,7 @@ build/
 
 ### Playwright MCP ###
 .playwright-mcp/
+
+### Docs Site ###
+docs-site/.vitepress/
+docs-site/node_modules/

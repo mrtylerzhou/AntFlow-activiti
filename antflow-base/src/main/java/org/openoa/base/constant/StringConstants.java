@@ -105,6 +105,9 @@ public class StringConstants {
     public static final String AF_CONDITION_DISAGREE_AUTO_REJECT_COMMENT ="条件拒绝自动拒绝,条件评估结果:%s";
     public static final String AF_CONDITION_AUTO_SIGNUP_COMMENT ="条件自动加批,条件评估结果:%s";
     public static final String AF_CONDITION_AUTO_TRANSFER_COMMENT ="条件自动转办,条件评估结果:%s";
+    public static final String AF_AUTO_APPROVE_PREFIX ="【自动审批】";
+    public static final String AF_AUTO_APPROVE_COMMENT ="自动审批代为完成,条件评估结果:%s";
+    public static final String AF_AUTO_APPROVE_UNCONDITIONAL_COMMENT ="无条件自动审批代为完成";
     public static final String AF_CONDITION_COPY_SKIP_COMMENT ="条件抄送跳过,条件评估结果:%s";
     public static final String AF_COPY_V2_NODE_SUFFIX ="\uD83D\uDCE2";
     public static final String AF_SKIP_ASSIGNEE_NODE_SUFFIX ="⬇\uFE0F";

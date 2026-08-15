@@ -230,6 +230,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
                 }
 
+                }
                 String type = (String) nextElement.getProperty("type");
                 if ("parallelGateway".equals(type)) {
                     if (nextElement.getOutgoingTransitions().size() > 1) {

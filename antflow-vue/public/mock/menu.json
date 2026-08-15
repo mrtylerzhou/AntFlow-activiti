@@ -223,6 +223,18 @@
             "noCache": false,
             "link": null
           }
+        },
+        {
+          "name": "autoApproveSetting",
+          "path": "autoApprove",
+          "hidden": false,
+          "component": "workflow/flowDevOps/autoApprove/index",
+          "meta": {
+            "title": "自动审批设置",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
         }
       ]
     },
