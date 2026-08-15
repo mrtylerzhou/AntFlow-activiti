@@ -88,28 +88,32 @@ onMounted(() => {
     getConfOptions();
 });
 
-/** 加载已启用低代码流程下拉 */
+/** 加载已启用低代码流程下拉(进入页面不自动查列表,用户点搜索才加载) */
 function getConfOptions() {
     getLFActiveFormCodePageList({ page: 1, pageSize: 1000 }, {}).then(res => {
         confOptions.value = res.data ?? [];
-        // 默认选中第一个流程,直接出数据
+        // 默认选中第一个流程,但不触发列表加载
         if (confOptions.value.length > 0) {
             query.value.formCode = confOptions.value[0].key;
-            getList();
         }
     }).catch(() => {
         proxy.$modal.msgError("加载低代码流程列表失败");
     });
 }
 
-/** 查询列表 */
+/** 查询列表:流程编号优先,有流程编号时忽略其他条件只传流程编号;否则必须选低代码流程 */
 async function getList() {
-    if (!query.value.formCode) {
-        proxy.$modal.msgWarning("请先选择低代码流程");
+    const processNumber = (query.value.processNumber ?? "").trim();
+    if (!processNumber && !query.value.formCode) {
+        proxy.$modal.msgWarning("请选择低代码流程或输入流程编号");
         return;
     }
     loading.value = true;
-    await getBusinessDataListPage(pageDto.value, query.value).then(response => {
+    // 流程编号优先: 只向后端传流程编号字段
+    const payload = processNumber
+        ? { processNumber }
+        : { formCode: query.value.formCode };
+    await getBusinessDataListPage(pageDto.value, payload).then(response => {
         columns.value = response.data?.columns ?? [];
         dataList.value = response.data?.rows ?? [];
         total.value = response.data?.total ?? 0;

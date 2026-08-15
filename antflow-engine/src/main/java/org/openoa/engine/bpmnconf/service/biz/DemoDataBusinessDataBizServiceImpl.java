@@ -87,17 +87,51 @@ public class DemoDataBusinessDataBizServiceImpl {
 
     /**
      * 分页查询低代码流程业务数据,动态拼接横向表
+     * <p>流程编号优先:传入流程编号时忽略 formCode,只按流程编号查询;
+     * 未传流程编号时才要求 formCode</p>
      *
-     * @param req formCode + 流程编号关键字 + 分页
+     * @param req formCode(可选) + 流程编号关键字(可选) + 分页,两者至少传一个
      * @return columns + rows + total
      */
     public BusinessDataListVo listPage(BusinessDataListPageReq req) {
-        if (req == null || StringUtils.isBlank(req.getFormCode())) {
-            throw new AFBizException("请选择低代码流程(formCode)");
+        if (req == null) {
+            throw new AFBizException("请选择低代码流程或输入流程编号");
         }
-        String formCode = req.getFormCode().trim();
+        String formCode = StringUtils.isBlank(req.getFormCode()) ? null : req.getFormCode().trim();
+        String processNumber = StringUtils.isBlank(req.getProcessNumber()) ? null : req.getProcessNumber().trim();
+        if (formCode == null && processNumber == null) {
+            throw new AFBizException("请选择低代码流程或输入流程编号");
+        }
 
-        // 1. 有效流程配置 -> confId(字段配置链路,不经路由表)
+        // 1. 主查询分页(bpm_business_process 非路由表,安全)
+        //    流程编号优先: 有流程编号时忽略 formCode 过滤
+        Page<BpmBusinessProcess> page = PageUtils.getPageByPageDto(req.getPageDto() == null ? PageDto.first() : req.getPageDto());
+        LambdaQueryWrapper<BpmBusinessProcess> qw = AFWrappers.<BpmBusinessProcess>lambdaTenantQuery()
+                .eq(BpmBusinessProcess::getIsLowCodeFlow, 1)
+                .eq(BpmBusinessProcess::getIsDel, 0)
+                .orderByDesc(BpmBusinessProcess::getCreateTime);
+        if (processNumber != null) {
+            qw.like(BpmBusinessProcess::getBusinessNumber, processNumber);
+        } else {
+            qw.eq(BpmBusinessProcess::getProcessinessKey, formCode);
+        }
+        Page<BpmBusinessProcess> bpmPage = bpmBusinessProcessService.page(page, qw);
+        List<BpmBusinessProcess> records = bpmPage.getRecords();
+
+        // 2. 列定义来源 formCode: 未传时取第一条记录(最新)的 processiness_key
+        if (formCode == null && !records.isEmpty()) {
+            formCode = records.get(0).getProcessinessKey();
+        }
+        if (formCode == null) {
+            // 无记录且未传 formCode: 无列定义,直接返回空
+            return BusinessDataListVo.builder()
+                    .columns(Collections.emptyList())
+                    .rows(Collections.emptyList())
+                    .total(bpmPage.getTotal())
+                    .build();
+        }
+
+        // 3. 有效流程配置 -> confId(字段配置链路,不经路由表)
         BpmnConf bpmnConf = bpmnConfService.getOne(
                 AFWrappers.<BpmnConf>lambdaTenantQuery()
                         .eq(BpmnConf::getFormCode, formCode)
@@ -108,29 +142,17 @@ public class DemoDataBusinessDataBizServiceImpl {
         }
         Long confId = bpmnConf.getId();
 
-        // 2. 字段配置(按id升序,列顺序即创建顺序)
+        // 4. 字段配置(按id升序,列顺序即创建顺序)
         List<BpmnConfLfFormdataField> fieldConfigs = lfFormdataFieldService.list(
                 new LambdaQueryWrapper<BpmnConfLfFormdataField>()
                         .eq(BpmnConfLfFormdataField::getBpmnConfId, confId)
                         .eq(BpmnConfLfFormdataField::getIsDel, 0)
                         .orderByAsc(BpmnConfLfFormdataField::getId));
 
-        // 3. 隐藏字段集合(任意节点 perm=H -> 后端脱敏)
+        // 5. 隐藏字段集合(任意节点 perm=H -> 后端脱敏)
         Set<String> hiddenFieldIds = collectHiddenFieldIds(confId);
 
-        // 4. 主查询分页(bpm_business_process 非路由表,安全)
-        Page<BpmBusinessProcess> page = PageUtils.getPageByPageDto(req.getPageDto() == null ? PageDto.first() : req.getPageDto());
-        LambdaQueryWrapper<BpmBusinessProcess> qw = AFWrappers.<BpmBusinessProcess>lambdaTenantQuery()
-                .eq(BpmBusinessProcess::getProcessinessKey, formCode)
-                .eq(BpmBusinessProcess::getIsLowCodeFlow, 1)
-                .eq(BpmBusinessProcess::getIsDel, 0)
-                .like(StringUtils.isNotBlank(req.getProcessNumber()),
-                        BpmBusinessProcess::getBusinessNumber, req.getProcessNumber())
-                .orderByDesc(BpmBusinessProcess::getCreateTime);
-        Page<BpmBusinessProcess> bpmPage = bpmBusinessProcessService.page(page, qw);
-        List<BpmBusinessProcess> records = bpmPage.getRecords();
-
-        // 5. 批量查竖表字段值(main_id in + formCode,参数名必须为formCode)
+        // 6. 批量查竖表字段值(main_id in + formCode,参数名必须为formCode)
         List<Long> mainIds = records.stream()
                 .map(BpmBusinessProcess::getBusinessId)
                 .filter(Objects::nonNull)
@@ -145,14 +167,13 @@ public class DemoDataBusinessDataBizServiceImpl {
                     .collect(Collectors.groupingBy(f -> String.valueOf(f.getMainId())));
         }
 
-        // 6. 拼接 rows
+        // 7. 拼接 rows
         List<Map<String, Object>> rows = new ArrayList<>(records.size());
         for (BpmBusinessProcess bp : records) {
             Map<String, Object> row = new LinkedHashMap<>();
-            row.put("processNumber", bp.getBusinessNumber());
-            row.put("processKey", bp.getProcessinessKey());
             row.put("description", bp.getDescription());
-            // 动态列
+            row.put("version", bp.getVersion());
+            // 动态列(业务数据)
             List<LFMainField> mainFields = mainId2Fields.getOrDefault(bp.getBusinessId(), Collections.emptyList());
             Map<String, List<LFMainField>> fieldId2Fields = mainFields.stream()
                     .collect(Collectors.groupingBy(LFMainField::getFieldId));
@@ -165,6 +186,9 @@ public class DemoDataBusinessDataBizServiceImpl {
                 List<LFMainField> fields = fieldId2Fields.get(fieldId);
                 row.put(fieldKey(fieldId), buildFieldValue(fields, fieldConfig));
             }
+            // 流程编号在业务数据之后、发起人之前
+            row.put("processNumber", bp.getBusinessNumber());
+            row.put("processKey", bp.getProcessinessKey());
             row.put("createUser", StringUtils.isNotBlank(bp.getUserName()) ? bp.getUserName() : bp.getCreateUser());
             row.put("processState", bp.getProcessState());
             row.put("processStateName", formatProcessState(bp.getProcessState()));
@@ -173,7 +197,7 @@ public class DemoDataBusinessDataBizServiceImpl {
             rows.add(row);
         }
 
-        // 7. columns
+        // 8. columns
         List<BusinessDataListVo.BusinessDataColumnVo> columns = buildColumns(fieldConfigs);
 
         return BusinessDataListVo.builder()
@@ -184,12 +208,12 @@ public class DemoDataBusinessDataBizServiceImpl {
     }
 
     /**
-     * 构建列定义:固定列(流程编号/流程名称) + 动态列 + 固定列(发起人/流程状态/发起时间)
+     * 构建列定义:流程名称(第1列) + 流程版本(第2列) + 动态业务数据列 + 流程编号 + 发起人/流程状态/发起时间
      */
     private List<BusinessDataListVo.BusinessDataColumnVo> buildColumns(List<BpmnConfLfFormdataField> fieldConfigs) {
         List<BusinessDataListVo.BusinessDataColumnVo> columns = new ArrayList<>();
-        columns.add(BusinessDataListVo.BusinessDataColumnVo.builder().key("processNumber").label("流程编号").fixed(true).build());
-        columns.add(BusinessDataListVo.BusinessDataColumnVo.builder().key("description").label("流程名称").fixed(false).build());
+        columns.add(BusinessDataListVo.BusinessDataColumnVo.builder().key("description").label("流程名称").fixed(true).build());
+        columns.add(BusinessDataListVo.BusinessDataColumnVo.builder().key("version").label("流程版本").fixed(false).build());
         for (BpmnConfLfFormdataField fieldConfig : fieldConfigs) {
             columns.add(BusinessDataListVo.BusinessDataColumnVo.builder()
                     .key(fieldKey(fieldConfig.getFieldId()))
@@ -197,8 +221,10 @@ public class DemoDataBusinessDataBizServiceImpl {
                     .fixed(false)
                     .build());
         }
-        columns.add(BusinessDataListVo.BusinessDataColumnVo.builder().key("createUser").label("发起人").fixed(false).build());
+        // 流程编号在业务数据之后、发起人之前
+        columns.add(BusinessDataListVo.BusinessDataColumnVo.builder().key("processNumber").label("流程编号").fixed(false).build());
         columns.add(BusinessDataListVo.BusinessDataColumnVo.builder().key("processStateName").label("流程状态").fixed(false).build());
+        columns.add(BusinessDataListVo.BusinessDataColumnVo.builder().key("createUser").label("发起人").fixed(false).build());
         columns.add(BusinessDataListVo.BusinessDataColumnVo.builder().key("createTime").label("发起时间").fixed(false).build());
         return columns;
     }

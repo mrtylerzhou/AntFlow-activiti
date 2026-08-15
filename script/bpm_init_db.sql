@@ -921,7 +921,7 @@ CREATE TABLE IF NOT EXISTS `bpm_process_permissions` (
       `create_user` varchar(64) COMMENT 'Create user ID',
       `create_time` timestamp not null default current_timestamp COMMENT 'Create time',
       `process_key` VARCHAR(50) COMMENT 'Process key',
-      `is_del` TINYINT COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
+      `is_del` TINYINT DEFAULT 0 COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
        `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
       PRIMARY KEY (`id`),
       UNIQUE KEY `uk_object_type_object_id_permissions_type_process_key_is_del` (`object_type`, `object_id`, `permissions_type`, `process_key`, `is_del`)
