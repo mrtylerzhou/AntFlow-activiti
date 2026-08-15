@@ -206,7 +206,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
             wrapper.eq("version", version);
         }
         if (index!=null) {
-            wrapper.eq("`index`", index);
+            wrapper.eq("indx", index);
         }
         if (isDel!=null) {
             wrapper.eq("is_del", 0);
@@ -227,8 +227,8 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
             return Collections.EMPTY_LIST;
         }
         QueryWrapper<SysVersion> wrapper = new QueryWrapper<>();
-        wrapper.gt("`index`", minIndex.intValue());
-        wrapper.le("`index`", maxIndex.intValue());
+        wrapper.gt("indx", minIndex.intValue());
+        wrapper.le("indx", maxIndex.intValue());
         return getBaseMapper().selectList(wrapper);
     }
 
