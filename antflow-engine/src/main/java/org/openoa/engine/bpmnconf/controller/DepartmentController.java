@@ -45,4 +45,20 @@ public class DepartmentController {
     public Result<List<Department>> getByIds(List<Integer> ids) {
         return Result.newSuccessResult(departmentService.getByIds(ids));
     }
+
+    /**
+     * 根据父级部门id查询直接子部门(树形懒加载接口,parentId为空时返回根节点)
+     */
+    @RequestMapping("/getDepartmentsByParentId")
+    public Result<List<Department>> getDepartmentsByParentId(Integer parentId) {
+        return Result.newSuccessResult(departmentService.getDepartmentsByParentId(parentId));
+    }
+
+    /**
+     * 查询全部部门(含path/level, 供前端组装部门树)
+     */
+    @RequestMapping("/getAllDepartments")
+    public Result<List<Department>> getAllDepartments() {
+        return Result.newSuccessResult(departmentService.getAllDepartments());
+    }
 }

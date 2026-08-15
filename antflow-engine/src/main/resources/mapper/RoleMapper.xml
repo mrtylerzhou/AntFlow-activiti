@@ -31,4 +31,16 @@
         select id ,role_name as name
          from t_role
     </select>
+
+    <select id="queryRoleIdsByUserId" resultType="java.lang.String">
+        select tur.role_id
+        from t_user_role tur
+        where tur.user_id = #{userId}
+    </select>
+
+    <select id="queryRoleByNameFuzzy" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        select id, role_name as name
+        from t_role
+        where role_name like concat('%', #{name}, '%')
+    </select>
 </mapper>

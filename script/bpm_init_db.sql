@@ -915,16 +915,16 @@ CREATE TABLE IF NOT EXISTS `bpm_process_category` (
 DROP TABLE IF EXISTS `bpm_process_permissions`;
 CREATE TABLE IF NOT EXISTS `bpm_process_permissions` (
       `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
-      `user_id` varchar(64) COMMENT 'User ID',
-      `dep_id` BIGINT COMMENT 'Department ID',
+      `object_type` INT COMMENT 'Authorize object type (1 for user, 2 for department, 3 for role)',
+      `object_id` varchar(64) COMMENT 'Authorize object ID (user ID/department ID/role ID)',
       `permissions_type` INT COMMENT 'Permission type (1 for view, 2 for create, 3 for monitor)',
       `create_user` varchar(64) COMMENT 'Create user ID',
       `create_time` timestamp not null default current_timestamp COMMENT 'Create time',
       `process_key` VARCHAR(50) COMMENT 'Process key',
-      `office_id` BIGINT COMMENT 'Office ID',
       `is_del` TINYINT COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
        `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-      PRIMARY KEY (`id`)
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `uk_object_type_object_id_permissions_type_process_key_is_del` (`object_type`, `object_id`, `permissions_type`, `process_key`, `is_del`)
 ) ENGINE=InnoDB  COMMENT='process permission';
 
 

@@ -22,4 +22,14 @@ public interface RoleMapper {
     List<BaseIdTranStruVo> queryUserByRoleIds(@Param("roleIds") Collection<String> roleIds);
 
     LinkedList<BaseIdTranStruVo> selectAll();
+
+    /**
+     * 根据用户id查询其拥有的角色id集合
+     */
+    List<String> queryRoleIdsByUserId(@Param("userId") String userId);
+
+    /**
+     * 角色名称模糊查询
+     */
+    List<BaseIdTranStruVo> queryRoleByNameFuzzy(@Param("name") String name);
 }

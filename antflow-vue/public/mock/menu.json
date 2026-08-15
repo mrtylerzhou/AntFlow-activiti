@@ -223,6 +223,18 @@
             "noCache": false,
             "link": null
           }
+        },
+        {
+          "name": "processPermissions",
+          "path": "processPermissions",
+          "hidden": false,
+          "component": "workflow/flowDevOps/processPermissions/index",
+          "meta": {
+            "title": "流程权限管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
         }
       ]
     },

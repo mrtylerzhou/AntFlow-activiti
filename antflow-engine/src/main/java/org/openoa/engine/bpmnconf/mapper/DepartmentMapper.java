@@ -25,6 +25,11 @@ public interface DepartmentMapper  {
 
     List<Department> getDepartmentsByParentId(@Param("parentId") Integer parentId);
 
+    /**
+     * 查询全部部门(含path/level, 供前端组装部门树)
+     */
+    List<Department> getAllDepartments();
+
     List<Department> getDepartmentByCompanyId(@Param("companyId") String companyId);
 
     List<Department> getDepartmentPageList(@Param("name") String name);

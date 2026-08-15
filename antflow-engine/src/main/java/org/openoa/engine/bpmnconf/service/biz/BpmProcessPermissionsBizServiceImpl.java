@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
 import org.openoa.base.entity.BpmProcessPermissions;
 import org.openoa.base.entity.Department;
+import org.openoa.base.mapper.RoleMapper;
 import org.openoa.base.service.AfDepartmentService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
@@ -18,6 +19,8 @@ import java.util.stream.Collectors;
 public class BpmProcessPermissionsBizServiceImpl implements BpmProcessPermissionsBizService {
     @Autowired
     private AfDepartmentService departmentService;
+    @Autowired
+    private RoleMapper roleMapper;
 
     /**
      * get a list of specified user's permissions
@@ -26,17 +29,29 @@ public class BpmProcessPermissionsBizServiceImpl implements BpmProcessPermission
     public List<String> getProcessKey(String userId, Integer type) {
         QueryWrapper<BpmProcessPermissions> permissionsWrapper = new QueryWrapper<>();
         permissionsWrapper.eq("permissions_type", type);
-        permissionsWrapper.eq("user_id", userId);
+        permissionsWrapper.eq("object_type", 1);
+        permissionsWrapper.eq("object_id", userId);
         List<BpmProcessPermissions> list = getMapper().selectList(permissionsWrapper);
         //根据员工获取下级部门
         List<Department> departmentVos = departmentService.ListSubDepartmentByEmployeeId(userId);
-        List<Integer> depList = departmentVos.stream().map(Department::getId).collect(Collectors.toList());
+        List<String> depList = departmentVos.stream().map(d -> String.valueOf(d.getId())).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(depList)) {
             QueryWrapper<BpmProcessPermissions> wrapper = new QueryWrapper<>();
             wrapper.eq("permissions_type", type);
-            wrapper.in("dep_id", depList);
+            wrapper.eq("object_type", 2);
+            wrapper.in("object_id", depList);
             List<BpmProcessPermissions> permissionsList = getMapper().selectList(wrapper);
             list.addAll(permissionsList);
+        }
+        //根据用户拥有的角色匹配角色权限
+        List<String> roleIds = roleMapper.queryRoleIdsByUserId(userId);
+        if (!CollectionUtils.isEmpty(roleIds)) {
+            QueryWrapper<BpmProcessPermissions> roleWrapper = new QueryWrapper<>();
+            roleWrapper.eq("permissions_type", type);
+            roleWrapper.eq("object_type", 3);
+            roleWrapper.in("object_id", roleIds);
+            List<BpmProcessPermissions> rolePermissionsList = getMapper().selectList(roleWrapper);
+            list.addAll(rolePermissionsList);
         }
 
         //deduplication

@@ -30,15 +30,15 @@ public class BpmProcessPermissions implements TenantField, Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     /**
-     * user id
+     * 授权对象类型 1=人员 2=部门 3=角色
      */
-    @TableField("user_id")
-    private String userId;
+    @TableField("object_type")
+    private Integer objectType;
     /**
-     * dept id
+     * 授权对象 id(人员id/部门id/角色id)
      */
-    @TableField("dep_id")
-    private Long depId;
+    @TableField("object_id")
+    private String objectId;
     /**
      * permission type 1 for view 2 for create 3 for monitor
      */
@@ -60,11 +60,6 @@ public class BpmProcessPermissions implements TenantField, Serializable {
     @TableField("process_key")
     private String processKey;
 
-    /**
-     * office id
-     */
-    @TableField("office_id")
-    private Long officeId;
     @TableField("is_del")
     private Integer isDel;
     @TableField("tenant_id")

@@ -52,6 +52,11 @@ public class DepartmentServiceImpl implements AfDepartmentService {
     }
 
     @Override
+    public List<Department> getAllDepartments(){
+        return departmentMapper.getAllDepartments();
+    }
+
+    @Override
     public List<Department> getDepartmentByCompanyId(String companyId){
         return departmentMapper.getDepartmentByCompanyId(companyId);
     }

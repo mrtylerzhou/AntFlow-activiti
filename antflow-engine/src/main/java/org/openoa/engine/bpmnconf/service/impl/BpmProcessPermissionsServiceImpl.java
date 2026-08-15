@@ -38,7 +38,8 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
             vo.getCreateUserIds().forEach(o -> {
                 getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CREATE_TYPE.getCode())
-                        .userId(o)
+                        .objectType(1)
+                        .objectId(o)
                         .processKey(vo.getProcessKey())
                         .createUser(genericEmployee.getUserId())
                         .createTime(new Date())
@@ -50,7 +51,8 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
             vo.getCreateDeptIds().forEach(o -> {
                 getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CREATE_TYPE.getCode())
-                        .depId(o)
+                        .objectType(2)
+                        .objectId(String.valueOf(o))
                         .processKey(vo.getProcessKey())
                         .createUser(genericEmployee.getUserId())
                         .createTime(new Date())
@@ -62,7 +64,8 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
             vo.getViewdeptIds().forEach(o -> {
                 getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.VIEW_TYPE.getCode())
-                        .depId(o)
+                        .objectType(2)
+                        .objectId(String.valueOf(o))
                         .processKey(vo.getProcessKey())
                         .createUser(genericEmployee.getUserId())
                         .createTime(new Date())
@@ -74,7 +77,8 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
             vo.getViewUserIds().forEach(o -> {
                 getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.VIEW_TYPE.getCode())
-                        .userId(o)
+                        .objectType(1)
+                        .objectId(o)
                         .processKey(vo.getProcessKey())
                         .createUser(genericEmployee.getUserId())
                         .createTime(new Date())
@@ -86,7 +90,8 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
             vo.getControlUserIds().forEach(o -> {
                 getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CONTROL_TYPE.getCode())
-                        .userId(o)
+                        .objectType(1)
+                        .objectId(o)
                         .processKey(vo.getProcessKey())
                         .createUser(genericEmployee.getUserId())
                         .createTime(new Date())
@@ -98,31 +103,34 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
             vo.getControlDeptIds().forEach(o -> {
                 getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CONTROL_TYPE.getCode())
-                        .depId(o)
+                        .objectType(2)
+                        .objectId(String.valueOf(o))
                         .processKey(vo.getProcessKey())
                         .createUser(genericEmployee.getUserId())
                         .createTime(new Date())
                         .build());
             });
         }
-        //permissions based on working place
-        if (!CollectionUtils.isEmpty(vo.getCreateOfficeIds())) {
-            vo.getCreateOfficeIds().forEach(o -> {
+        //permissions based on role
+        if (!CollectionUtils.isEmpty(vo.getCreateRoleIds())) {
+            vo.getCreateRoleIds().forEach(o -> {
                 getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CREATE_TYPE.getCode())
-                        .officeId(o)
+                        .objectType(3)
+                        .objectId(o)
                         .processKey(vo.getProcessKey())
                         .createUser(genericEmployee.getUserId())
                         .createTime(new Date())
                         .build());
             });
         }
-        //permissions based on working place
-        if (!CollectionUtils.isEmpty(vo.getViewOfficeIds())) {
-            vo.getViewOfficeIds().forEach(o -> {
+        //permissions based on role
+        if (!CollectionUtils.isEmpty(vo.getViewRoleIds())) {
+            vo.getViewRoleIds().forEach(o -> {
                 getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.VIEW_TYPE.getCode())
-                        .officeId(o)
+                        .objectType(3)
+                        .objectId(o)
                         .processKey(vo.getProcessKey())
                         .createUser(genericEmployee.getUserId())
                         .createTime(new Date())
@@ -145,9 +153,9 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         permissionsWrapper.eq("process_key", processKey);
         permissionsWrapper.eq("permissions_type", permissionsType);
         if (isUser) {
-            permissionsWrapper.ne("user_id", ' ');
+            permissionsWrapper.eq("object_type", 1);
         } else {
-            permissionsWrapper.ne("dep_id", ' ');
+            permissionsWrapper.eq("object_type", 2);
         }
         return getBaseMapper().selectList(permissionsWrapper);
     }
@@ -164,7 +172,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         QueryWrapper<BpmProcessPermissions> wrapper = new QueryWrapper<>();
         wrapper.eq("process_key", processKey);
         wrapper.eq("permissions_type", permissionsType);
-        wrapper.ne("office_id", ' ');
+        wrapper.eq("object_type", 3);
         return getBaseMapper().selectList(wrapper);
     }
 
