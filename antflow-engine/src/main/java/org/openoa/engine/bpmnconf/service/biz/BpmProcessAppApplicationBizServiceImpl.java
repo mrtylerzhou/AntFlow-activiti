@@ -468,7 +468,7 @@ public class BpmProcessAppApplicationBizServiceImpl implements BpmProcessAppAppl
     /**
      * mapping
      */
-    private List<BpmProcessAppApplicationVo> processAppDate(List<BpmProcessAppApplicationVo> list) {
+    private List<BpmProcessAppApplicationVo> processAppData(List<BpmProcessAppApplicationVo> list) {
         return list.stream().map(o -> {
             o.setSource(o.getEffectiveSource());
             BpmnConf bpmnConfByCode = bpmnConfBizService.getBpmnConfByFormCode(o.getProcessKey());

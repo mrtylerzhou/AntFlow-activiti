@@ -1108,7 +1108,7 @@ CREATE TABLE IF NOT EXISTS  `t_sys_version` (
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     `version` VARCHAR(100) NOT NULL COMMENT 'Version',
     `description` varchar(255) COMMENT 'Version description',
-    `index` INT COMMENT 'Index',
+    `indx` INT COMMENT 'Index',
     `is_force` TINYINT COMMENT 'Force update 0 for no, 1 for yes',
     `android_url` VARCHAR(500) COMMENT 'Android download URL',
     `ios_url` VARCHAR(500) COMMENT 'iOS download URL',

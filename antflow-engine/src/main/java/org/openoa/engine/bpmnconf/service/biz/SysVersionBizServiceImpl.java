@@ -95,7 +95,7 @@ public class SysVersionBizServiceImpl implements SysVersionBizService {
             Integer index = getMapper().maxIndex() + 1;
             //set is hide(unpublished)
             sysVersion.setIsHide(1);
-            sysVersion.setIndex(index);
+            sysVersion.setIndx(index);
             if (this.getService().save(sysVersion)) {
                 if (!CollectionUtils.isEmpty(vo.getAppIds()) && !CollectionUtils.isEmpty(vo.getDataIds())) {
                     processAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), AppApplicationType.APP.getCode());

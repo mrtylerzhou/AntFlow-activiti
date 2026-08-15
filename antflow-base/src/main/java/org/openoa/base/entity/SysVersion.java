@@ -55,7 +55,7 @@ public class SysVersion  implements TenantField, Serializable {
     /**
      * index
      */
-    private Integer index;
+    private Integer indx;
     /**
      * force update 0 for no,1 for yes
      */

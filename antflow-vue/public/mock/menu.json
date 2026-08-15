@@ -235,6 +235,18 @@
             "noCache": false,
             "link": null
           }
+        },
+        {
+          "name": "appVersion",
+          "path": "appVersion",
+          "hidden": false,
+          "component": "workflow/flowDevOps/appVersion/index",
+          "meta": {
+            "title": "App 版本管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
         }
       ]
     },
