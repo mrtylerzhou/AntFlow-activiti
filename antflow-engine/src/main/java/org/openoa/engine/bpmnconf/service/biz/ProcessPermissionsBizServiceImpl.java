@@ -69,7 +69,10 @@ public class ProcessPermissionsBizServiceImpl {
         qw.like(StringUtils.hasText(req.getFormCode()), "process_key", req.getFormCode());
         qw.eq(req.getPermissionsType() != null, "permissions_type", req.getPermissionsType());
         //授权对象精确过滤: 下拉搜索选中后传 objectType + objectId(优先于 objectName)
-        if (StringUtils.hasText(req.getObjectId())) {
+        if (req.getObjectType() != null && req.getObjectType() == 4) {
+            //全员: 只按 object_type=4 过滤,无对象 id
+            qw.eq("object_type", 4);
+        } else if (StringUtils.hasText(req.getObjectId())) {
             qw.eq(req.getObjectType() != null, "object_type", req.getObjectType());
             qw.eq("object_id", req.getObjectId());
         } else if (StringUtils.hasText(req.getObjectName())) {
@@ -182,7 +185,10 @@ public class ProcessPermissionsBizServiceImpl {
             int objectType = e.getObjectType() == null ? 1 : e.getObjectType();
             boolean isDepartment = objectType == 2;
             String objectName;
-            if (objectType == 3) {
+            if (objectType == 4) {
+                //全员: 对象固定 ALL
+                objectName = "全员";
+            } else if (objectType == 3) {
                 objectName = roleId2Name.getOrDefault(e.getObjectId(), e.getObjectId());
             } else if (objectType == 2) {
                 objectName = depId2Name.getOrDefault(Integer.valueOf(e.getObjectId()), e.getObjectId());
@@ -244,22 +250,32 @@ public class ProcessPermissionsBizServiceImpl {
         if (CollectionUtils.isEmpty(vo.getPermissionsTypes())) {
             throw new AFBizException("400002", "请选择权限类型");
         }
-        //对象类型: 兼容旧调用(isDepartment)与新增的 objectType(1=人员 2=部门 3=角色)
+        //对象类型: 兼容旧调用(isDepartment)与新增的 objectType(1=人员 2=部门 3=角色 4=全员)
         Integer objectType = vo.getObjectType();
         if (objectType == null) {
             objectType = Boolean.TRUE.equals(vo.getIsDepartment()) ? 2 : 1;
         }
-        if (objectType != 1 && objectType != 2 && objectType != 3) {
+        if (objectType != 1 && objectType != 2 && objectType != 3 && objectType != 4) {
             throw new AFBizException("400008", "授权对象类型不合法");
         }
-        //部门权限禁止监控/模板编辑
-        if (objectType == 2 && (vo.getPermissionsTypes().contains(ProcessJurisdictionEnum.CONTROL_TYPE.getCode())
-                || vo.getPermissionsTypes().contains(ProcessJurisdictionEnum.TEMPLATE_EDIT_TYPE.getCode()))) {
-            throw new AFBizException("400003", "部门权限不支持选择监控/模板编辑权限");
-        }
-        if (CollectionUtils.isEmpty(vo.getObjectIds())) {
-            String msg = objectType == 1 ? "请选择人员" : (objectType == 2 ? "请选择部门" : "请选择角色");
-            throw new AFBizException(objectType == 1 ? "400005" : (objectType == 2 ? "400004" : "400007"), msg);
+        //全员(object_type=4):仅支持创建权限,对象固定为 ALL
+        List<String> objectIds = vo.getObjectIds();
+        if (objectType == 4) {
+            if (vo.getPermissionsTypes().size() != 1
+                    || !vo.getPermissionsTypes().contains(ProcessJurisdictionEnum.CREATE_TYPE.getCode())) {
+                throw new AFBizException("400009", "全员权限仅支持选择创建权限");
+            }
+            objectIds = Collections.singletonList("ALL");
+        } else {
+            //部门权限禁止监控/模板编辑
+            if (objectType == 2 && (vo.getPermissionsTypes().contains(ProcessJurisdictionEnum.CONTROL_TYPE.getCode())
+                    || vo.getPermissionsTypes().contains(ProcessJurisdictionEnum.TEMPLATE_EDIT_TYPE.getCode()))) {
+                throw new AFBizException("400003", "部门权限不支持选择监控/模板编辑权限");
+            }
+            if (CollectionUtils.isEmpty(objectIds)) {
+                String msg = objectType == 1 ? "请选择人员" : (objectType == 2 ? "请选择部门" : "请选择角色");
+                throw new AFBizException(objectType == 1 ? "400005" : (objectType == 2 ? "400004" : "400007"), msg);
+            }
         }
 
         String loginUserId = SecurityUtils.getLogInEmpIdSafe();
@@ -267,7 +283,7 @@ public class ProcessPermissionsBizServiceImpl {
         int skipCount = 0;
         for (String processKey : vo.getProcessKeys()) {
             for (Integer permissionsType : vo.getPermissionsTypes()) {
-                for (String objectId : vo.getObjectIds()) {
+                for (String objectId : objectIds) {
                     if (exists(processKey, permissionsType, objectType, objectId)) {
                         skipCount++;
                     } else {

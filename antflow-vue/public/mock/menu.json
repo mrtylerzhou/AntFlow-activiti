@@ -37,6 +37,18 @@
       },
       "children": [
         {
+          "name": "startFlowList",
+          "path": "startFlowList",
+          "hidden": false,
+          "component": "workflow/flowTask/startFlowList/index",
+          "meta": {
+            "title": "发起流程",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
           "name": "MyTask",
           "path": "mytask",
           "hidden": false,

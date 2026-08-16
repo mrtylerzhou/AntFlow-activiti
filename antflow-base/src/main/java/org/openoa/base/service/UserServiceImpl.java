@@ -2,6 +2,7 @@ package org.openoa.base.service;
 
 import com.google.common.collect.Lists;
 import org.openoa.base.entity.DetailedUser;
+import org.openoa.base.mapper.RoleMapper;
 import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,5 +125,22 @@ public class UserServiceImpl implements AfUserService{
     public List<BaseIdTranStruVo> queryDepartmentLeaderByIds(List<String> employeeIds) {
         List<BaseIdTranStruVo> users = userMapper.queryDepartmentLeaderByIds(employeeIds);
         return users;
+    }
+
+    @Autowired
+    RoleMapper roleMapper;
+
+    @Override
+    public List<BaseIdTranStruVo> getUserRolesById(String userId) {
+        List<String> roleIds = roleMapper.queryRoleIdsByUserId(userId);
+        if (CollectionUtils.isEmpty(roleIds)) {
+            return Lists.newArrayList();
+        }
+        return roleMapper.queryRoleByIds(roleIds);
+    }
+
+    @Override
+    public List<BaseIdTranStruVo> getUserDepartmentsById(String userId) {
+        return userMapper.queryDepartmentByUserId(userId);
     }
 }

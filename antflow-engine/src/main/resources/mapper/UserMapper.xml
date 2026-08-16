@@ -214,4 +214,17 @@
         </where>)
         )
     </select>
+
+    <!--按用户查询所在部门及其全部子部门(id+name),权限匹配用;path 为空时退化为仅本部门-->
+    <select id="queryDepartmentByUserId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        select td.id as id, td.name as name
+        from t_department td
+        where td.id in (
+            select tu.department_id from t_user tu where tu.id = #{userId}
+        )
+        or td.path like concat(
+            (select d.path from t_department d inner join t_user tu2 on tu2.department_id = d.id where tu2.id = #{userId}),
+            '%'
+        )
+    </select>
 </mapper>

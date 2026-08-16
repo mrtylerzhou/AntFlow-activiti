@@ -32,10 +32,12 @@
                         <el-option v-for="item in deptOptions" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
                     <!-- 角色下拉(远程搜索) -->
-                    <el-select v-else v-model="query.objectId" placeholder="请选择角色" clearable filterable remote
+                    <el-select v-else-if="query.objectType === 3" v-model="query.objectId" placeholder="请选择角色" clearable filterable remote
                         :remote-method="remoteQueryRoles" :loading="roleLoading" style="width: 180px">
                         <el-option v-for="item in roleOptions" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
+                    <!-- 全员(无对象) -->
+                    <span v-else-if="query.objectType === 4">全员</span>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -101,6 +103,7 @@
                         <el-radio :value="1">人员</el-radio>
                         <el-radio :value="2">部门</el-radio>
                         <el-radio :value="3">角色</el-radio>
+                        <el-radio :value="4">全员</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="授权人员" v-if="form.objectType === 1">
@@ -121,7 +124,7 @@
                     </div>
                     <div class="el-form-item__tip">部门可多选(支持任意层级部门),与所选流程、权限类型组合批量授权</div>
                 </el-form-item>
-                <el-form-item label="授权角色" v-else>
+                <el-form-item label="授权角色" v-else-if="form.objectType === 3">
                     <div class="dept-select-box">
                         <div class="dept-select-tags" v-if="roleSelectedList.length > 0">
                             <el-tag v-for="(item, idx) in roleSelectedList" :key="item.id" closable
@@ -134,14 +137,19 @@
                     </div>
                     <div class="el-form-item__tip">角色可多选,与所选流程、权限类型组合批量授权</div>
                 </el-form-item>
+                <el-form-item v-else-if="form.objectType === 4">
+                    <div class="el-form-item__tip">全员即所有用户均可发起所选流程,仅支持创建权限</div>
+                </el-form-item>
                 <el-form-item label="权限类型" prop="permissionsTypes">
                     <el-checkbox-group v-model="form.permissionsTypes">
                         <el-checkbox v-for="item in permissionsTypeOptions" :key="item.value" :value="item.value"
-                            :disabled="form.objectType === 2 && (item.value === 3 || item.value === 4)">
+                            :disabled="(form.objectType === 2 && (item.value === 3 || item.value === 4))
+                                || (form.objectType === 4 && item.value !== 2)">
                             {{ item.label }}
                         </el-checkbox>
                     </el-checkbox-group>
                     <div class="el-form-item__tip" v-if="form.objectType === 2">部门权限不支持选择监控/模板编辑权限</div>
+                    <div class="el-form-item__tip" v-if="form.objectType === 4">全员权限仅支持选择创建权限</div>
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -193,6 +201,7 @@ const objectTypeOptions = [
     { value: 1, label: "人员" },
     { value: 2, label: "部门" },
     { value: 3, label: "角色" },
+    { value: 4, label: "全员" },
 ];
 const objectTypeLabel = (type) =>
     objectTypeOptions.find((o) => o.value === type)?.label ?? "-";
@@ -337,12 +346,16 @@ async function handleAdd() {
 
 /** 授权对象类型切换 */
 function handleObjectTypeChange() {
-    //切换时清空对象选择, 部门模式下自动去掉监控权限
+    //切换时清空对象选择
     userSelectedList.value = [];
     deptSelectedList.value = [];
     roleSelectedList.value = [];
     if (form.value.objectType === 2) {
         form.value.permissionsTypes = form.value.permissionsTypes.filter(t => t !== 3 && t !== 4);
+    }
+    if (form.value.objectType === 4) {
+        //全员仅支持创建权限
+        form.value.permissionsTypes = [2];
     }
 }
 
@@ -368,24 +381,30 @@ function removeRole(idx) {
 function submitForm() {
     proxy.$refs["formRef"].validate(async valid => {
         if (!valid) return;
-        //手动校验授权对象(自定义组件选择,不参与 el-form 校验)
-        if (form.value.objectType === 1 && userSelectedList.value.length === 0) {
-            proxy.$modal.msgWarning("请选择授权人员");
-            return;
+        let objectIds = [];
+        if (form.value.objectType === 4) {
+            //全员:对象固定为 ALL,仅创建权限
+            objectIds = ["ALL"];
+        } else {
+            //手动校验授权对象(自定义组件选择,不参与 el-form 校验)
+            if (form.value.objectType === 1 && userSelectedList.value.length === 0) {
+                proxy.$modal.msgWarning("请选择授权人员");
+                return;
+            }
+            if (form.value.objectType === 2 && deptSelectedList.value.length === 0) {
+                proxy.$modal.msgWarning("请选择授权部门");
+                return;
+            }
+            if (form.value.objectType === 3 && roleSelectedList.value.length === 0) {
+                proxy.$modal.msgWarning("请选择授权角色");
+                return;
+            }
+            objectIds = form.value.objectType === 1
+                ? userSelectedList.value.map(u => String(u.id))
+                : (form.value.objectType === 2
+                    ? deptSelectedList.value.map(d => String(d.id))
+                    : roleSelectedList.value.map(r => String(r.id)));
         }
-        if (form.value.objectType === 2 && deptSelectedList.value.length === 0) {
-            proxy.$modal.msgWarning("请选择授权部门");
-            return;
-        }
-        if (form.value.objectType === 3 && roleSelectedList.value.length === 0) {
-            proxy.$modal.msgWarning("请选择授权角色");
-            return;
-        }
-        const objectIds = form.value.objectType === 1
-            ? userSelectedList.value.map(u => String(u.id))
-            : (form.value.objectType === 2
-                ? deptSelectedList.value.map(d => String(d.id))
-                : roleSelectedList.value.map(r => String(r.id)));
         const payload = {
             processKeys: form.value.processKeys,
             permissionsTypes: form.value.permissionsTypes,

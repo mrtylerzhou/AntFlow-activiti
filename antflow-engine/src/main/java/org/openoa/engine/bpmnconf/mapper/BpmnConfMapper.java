@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmProcessVo;
+import org.openoa.engine.vo.StartFlowListRowVo;
 
 import java.util.List;
 
@@ -36,4 +37,9 @@ public interface BpmnConfMapper extends BaseMapper<BpmnConf> {
     List<String> formCodeListByBpmnName(@Param("bpmnName") String bpmnName);
 
     List<String> formCodeListByConfId(@Param("confId") Long confId);
+
+    /**
+     * 发起流程聚合:全部有效流程(含 applicationId 关联,outside 用)
+     */
+    List<StartFlowListRowVo> selectStartFlowList();
 }
