@@ -165,13 +165,13 @@ public class ProcessConfVo extends BaseVo {
      */
     private Integer iconId;
 
-    public List<Long> createOfficeIds;
+    public List<String> createRoleIds;
 
-    public List<BaseIdTranStruVo> createOfficeList;
+    public List<BaseIdTranStruVo> createRoleList;
 
-    public List<Long> viewOfficeIds;
+    public List<String> viewRoleIds;
 
-    public List<BaseIdTranStruVo> viewOfficeList;
+    public List<BaseIdTranStruVo> viewRoleList;
     private List<BpmnTemplateVo> templateVos;
 
 }

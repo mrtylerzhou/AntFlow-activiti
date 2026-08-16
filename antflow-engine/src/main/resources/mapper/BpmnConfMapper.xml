@@ -179,4 +179,19 @@
           AND FIND_IN_SET(#{formdataId}, lf_formdata_ids) &gt; 0
         ORDER BY id DESC
     </select>
+
+    <!--发起流程聚合:全部有效流程(LEFT JOIN 应用表取 applicationId,outside 跳转用)-->
+    <select id="selectStartFlowList" resultType="org.openoa.engine.vo.StartFlowListRowVo">
+        SELECT a.form_code AS formCode,
+        a.bpmn_name AS bpmnName,
+        a.bpmn_type AS bpmnType,
+        a.is_lowcode_flow AS isLowCodeFlow,
+        a.is_out_side_process AS isOutSideProcess,
+        a.create_time AS createTime,
+        b.id AS applicationId
+        FROM t_bpmn_conf a
+        left join bpm_process_app_application b on a.form_code = b.process_key
+        WHERE a.is_del = 0
+        and a.effective_status = 1
+    </select>
 </mapper>

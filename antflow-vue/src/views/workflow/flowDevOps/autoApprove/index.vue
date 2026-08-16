@@ -2,13 +2,17 @@
     <div class="app-container">
         <div class="query-box">
             <el-form :model="query" ref="queryRef" :inline="true" v-show="showSearch">
-                <el-form-item label="归属人" prop="ownerUserName">
-                    <el-input v-model="query.ownerUserName" placeholder="请输入归属人关键字" clearable
-                        style="width: 200px" @keyup.enter="handleQuery" />
+                <el-form-item label="归属人" prop="ownerUserId">
+                    <el-select v-model="query.ownerUserId" placeholder="请选择归属人" clearable filterable remote
+                        :remote-method="remoteQueryUsers" :loading="userLoading" style="width: 200px">
+                        <el-option v-for="item in userOptions" :key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="formCode" prop="formCode">
-                    <el-input v-model="query.formCode" placeholder="请输入formCode关键字" clearable
-                        style="width: 200px" @keyup.enter="handleQuery" />
+                <el-form-item label="流程" prop="formCode">
+                    <el-select v-model="query.formCode" placeholder="请选择流程" clearable filterable style="width: 220px">
+                        <el-option v-for="item in confOptions" :key="item.formCode"
+                            :label="`${item.bpmnName} [${item.formCode}]`" :value="item.formCode" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -128,6 +132,7 @@ import {
     getAutoApproveListPage, getAutoApproveActiveConfList, saveAutoApprove,
     updateAutoApprove, toggleAutoApprove, deleteAutoApprove, copyAutoApprove
 } from "@/api/workflow/autoApproveApi";
+import { queryUsersByName } from "@/api/workflow/processPermissionsApi";
 
 const { proxy } = getCurrentInstance();
 const store = useStore();
@@ -140,13 +145,15 @@ const total = ref(0);
 const open = ref(false);
 const title = ref("");
 const confOptions = ref([]);
+const userOptions = ref([]); //归属人下拉(远程搜索)
+const userLoading = ref(false);
 const nodeOptions = ref([]);
 const selectedElementIds = ref([]);
 const userSelectedList = ref([]);
 const currentFlowType = ref(null);
 
 const data = reactive({
-    query: { ownerUserName: undefined, formCode: undefined },
+    query: { ownerUserName: undefined, ownerUserId: undefined, formCode: undefined },
     pageDto: { page: 1, pageSize: 10 },
     form: {
         id: undefined,
@@ -179,6 +186,10 @@ watch(() => userSelectedList.value, (newVal) => {
 
 onMounted(async () => {
     await getList();
+    //流程下拉数据(搜索栏+新增弹窗共用)
+    getAutoApproveActiveConfList().then(res => {
+        confOptions.value = res.data ?? [];
+    });
 });
 
 /** 查询列表 */
@@ -197,8 +208,20 @@ function handleQuery() {
 }
 
 function resetQuery() {
-    query.value = { ownerUserName: undefined, formCode: undefined };
+    query.value = { ownerUserName: undefined, ownerUserId: undefined, formCode: undefined };
+    userOptions.value = [];
     handleQuery();
+}
+
+/** 归属人下拉远程搜索 */
+function remoteQueryUsers(name) {
+    userLoading.value = true;
+    queryUsersByName(name).then(res => {
+        userOptions.value = (res.data ?? []).map(u => ({ id: String(u.id), name: u.name }));
+        userLoading.value = false;
+    }).catch(() => {
+        userLoading.value = false;
+    });
 }
 
 function buildNodeScopeText(row) {

@@ -10,7 +10,7 @@
         <result column="is_del" property="isDel"/>
         <result column="version" property="version"/>
         <result column="description" property="description"/>
-        <result column="index" property="index"/>
+        <result column="indx" property="indx"/>
         <result column="is_force" property="isForce"/>
         <result column="android_url" property="androidUrl"/>
         <result column="ios_url" property="iosUrl"/>
@@ -21,12 +21,12 @@
 
 
     <sql id="Base_Column_List">
-        id, create_time AS createTime, update_time AS updateTime, is_del AS isDel, version, description, index, is_force AS isForce, android_url AS androidUrl, ios_url AS iosUrl, create_user AS createUser, update_user AS updateUser, is_hide AS isHide
+        id, create_time AS createTime, update_time AS updateTime, is_del AS isDel, version, description, indx, is_force AS isForce, android_url AS androidUrl, ios_url AS iosUrl, create_user AS createUser, update_user AS updateUser, is_hide AS isHide
     </sql>
 
     <select id="maxIndex" resultType="java.lang.Integer">
         SELECT
-            MAX(tsv.index)
+            MAX(tsv.indx)
         FROM
             t_sys_version AS tsv
         WHERE

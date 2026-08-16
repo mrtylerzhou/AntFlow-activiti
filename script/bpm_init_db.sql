@@ -810,7 +810,7 @@ CREATE TABLE if not exists `t_user_message`
       node        varchar(50)  null comment '发送节点id',
       params      varchar(255) null comment '发送类型',
       is_read     tinyint null comment '0为未读 1为已读',
-      is_del         tinyint null comment '0为未删除 1为已删除',
+      is_del         tinyint null default 0 comment '0为未删除 1为已删除',
       `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
       create_time datetime     null,
       update_time datetime     null,
@@ -842,7 +842,7 @@ CREATE TABLE IF NOT EXISTS `t_op_log`
     `remark`         varchar(255) DEFAULT NULL COMMENT 'remark',
     `log_type`       tinyint DEFAULT NULL COMMENT 'log type: null/0=operation, 1=email send',
     `receiver`       varchar(255) DEFAULT NULL COMMENT 'email receiver (for email send logs)',
-     is_del         tinyint null comment '0为未删除 1为已删除',
+     is_del         tinyint null default 0 comment '0为未删除 1为已删除',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
@@ -913,7 +913,7 @@ CREATE TABLE IF NOT EXISTS `bpm_process_application_type` (
       `id` BIGINT AUTO_INCREMENT COMMENT 'PRIMARY KEY',
       `application_id` BIGINT COMMENT 'Application ID',
       `category_id` BIGINT COMMENT 'Category ID',
-      `is_del` INT COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
+      `is_del` INT DEFAULT 0 COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
        `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
       `sort` INT COMMENT 'Sort order',
       `state` INT COMMENT 'Is frequently used (0 for no, 1 for yes)',
@@ -929,7 +929,7 @@ DROP TABLE IF EXISTS `bpm_process_category`;
 CREATE TABLE IF NOT EXISTS `bpm_process_category` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
     `process_type_name` VARCHAR(255) COMMENT 'Process type name',
-    `is_del` TINYINT COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
+    `is_del` TINYINT DEFAULT 0 COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     `state` INT COMMENT 'State of the category (specific meaning depends on application logic)',
     `sort` INT COMMENT 'Sort order',
@@ -941,16 +941,16 @@ CREATE TABLE IF NOT EXISTS `bpm_process_category` (
 DROP TABLE IF EXISTS `bpm_process_permissions`;
 CREATE TABLE IF NOT EXISTS `bpm_process_permissions` (
       `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
-      `user_id` varchar(64) COMMENT 'User ID',
-      `dep_id` BIGINT COMMENT 'Department ID',
+      `object_type` INT COMMENT 'Authorize object type (1 for user, 2 for department, 3 for role)',
+      `object_id` varchar(64) COMMENT 'Authorize object ID (user ID/department ID/role ID)',
       `permissions_type` INT COMMENT 'Permission type (1 for view, 2 for create, 3 for monitor)',
       `create_user` varchar(64) COMMENT 'Create user ID',
       `create_time` timestamp not null default current_timestamp COMMENT 'Create time',
       `process_key` VARCHAR(50) COMMENT 'Process key',
-      `office_id` BIGINT COMMENT 'Office ID',
-      `is_del` TINYINT COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
+      `is_del` TINYINT DEFAULT 0 COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
        `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-      PRIMARY KEY (`id`)
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `uk_object_type_object_id_permissions_type_process_key_is_del` (`object_type`, `object_id`, `permissions_type`, `process_key`, `is_del`)
 ) ENGINE=InnoDB  COMMENT='process permission';
 
 
@@ -987,7 +987,7 @@ CREATE TABLE  IF NOT EXISTS  `t_out_side_bpm_admin_personnel` (
     `employee_id` varchar(64) DEFAULT NULL COMMENT 'Administrator ID (Employee ID)',
     `employee_name` varchar(64) DEFAULT NULL COMMENT 'Administrator name (Employee name)',
     `remark` varchar(255) DEFAULT NULL COMMENT 'Remark',
-    `is_del` int DEFAULT NULL COMMENT 'Deletion flag: 0 for normal, 1 for deleted',
+    `is_del` int DEFAULT 0 COMMENT 'Deletion flag: 0 for normal, 1 for deleted',
     `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     `create_user` varchar(50) DEFAULT NULL COMMENT 'Creator user',
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation time',
@@ -1134,7 +1134,7 @@ CREATE TABLE IF NOT EXISTS  `t_sys_version` (
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     `version` VARCHAR(100) NOT NULL COMMENT 'Version',
     `description` varchar(255) COMMENT 'Version description',
-    `index` INT COMMENT 'Index',
+    `indx` INT COMMENT 'Index',
     `is_force` TINYINT COMMENT 'Force update 0 for no, 1 for yes',
     `android_url` VARCHAR(500) COMMENT 'Android download URL',
     `ios_url` VARCHAR(500) COMMENT 'iOS download URL',

@@ -37,6 +37,18 @@
       },
       "children": [
         {
+          "name": "startFlowList",
+          "path": "startFlowList",
+          "hidden": false,
+          "component": "workflow/flowTask/startFlowList/index",
+          "meta": {
+            "title": "发起流程",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
           "name": "MyTask",
           "path": "mytask",
           "hidden": false,
@@ -235,6 +247,42 @@
             "noCache": false,
             "link": null
           }
+        },
+        {
+          "name": "processPermissions",
+          "path": "processPermissions",
+          "hidden": false,
+          "component": "workflow/flowDevOps/processPermissions/index",
+          "meta": {
+            "title": "流程权限管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
+          "name": "appVersion",
+          "path": "appVersion",
+          "hidden": false,
+          "component": "workflow/flowDevOps/appVersion/index",
+          "meta": {
+            "title": "App 版本管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
+          "name": "processCategory",
+          "path": "processCategory",
+          "hidden": false,
+          "component": "workflow/flowDevOps/processCategory/index",
+          "meta": {
+            "title": "流程分类",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
         }
       ]
     },
@@ -307,6 +355,70 @@
           "component": "workflow/outsideMgt/outsideDesign/index",
           "meta": {
             "title": "流程设计",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "demoData",
+      "path": "/demoData",
+      "hidden": false,
+      "redirect": "noRedirect",
+      "component": "Layout",
+      "alwaysShow": true,
+      "meta": {
+        "title": "演示数据",
+        "icon": "table",
+        "noCache": false,
+        "link": null
+      },
+      "children": [
+        {
+          "name": "businessData",
+          "path": "businessData",
+          "hidden": false,
+          "component": "workflow/demoData/businessData/index",
+          "meta": {
+            "title": "业务数据",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
+          "name": "demoDataUser",
+          "path": "user",
+          "hidden": false,
+          "component": "workflow/demoData/user/index",
+          "meta": {
+            "title": "人员管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
+          "name": "demoDataDepartment",
+          "path": "department",
+          "hidden": false,
+          "component": "workflow/demoData/department/index",
+          "meta": {
+            "title": "部门管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
+          "name": "demoDataRole",
+          "path": "role",
+          "hidden": false,
+          "component": "workflow/demoData/role/index",
+          "meta": {
+            "title": "角色管理",
             "icon": "",
             "noCache": false,
             "link": null

@@ -12,12 +12,13 @@ const headers = {
 /**
  * 分页列表
  * @param {*} pageDto
- * @param {*} query {ownerUserName, formCode}
+ * @param {*} query {ownerUserName, ownerUserId, formCode}
  */
 export function getAutoApproveListPage(pageDto, query) {
   let data = {
     pageDto: pageDto,
     ownerUserName: query?.ownerUserName,
+    ownerUserId: query?.ownerUserId,
     formCode: query?.formCode,
   };
   return http.post(`${baseUrl}/userAutoApprove/listPage`, data, { headers });

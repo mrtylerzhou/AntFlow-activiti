@@ -85,10 +85,14 @@ public class UserController {
 
     /**
      * 获取角色信息
+     * @param name 角色名称关键字(可选, 非空时模糊查询, 空则返回全量)
      * @return
      */
     @GetMapping("/getRoleInfo")
-    public Result<List<BaseIdTranStruVo>> getRoleInfo(){
+    public Result<List<BaseIdTranStruVo>> getRoleInfo(@RequestParam(value = "name", required = false) String name){
+        if (StringUtils.isNotEmpty(name)) {
+            return Result.newSuccessResult(roleMapper.queryRoleByNameFuzzy(name));
+        }
         LinkedList<BaseIdTranStruVo> list = roleMapper.selectAll();
         return Result.newSuccessResult(list);
     }

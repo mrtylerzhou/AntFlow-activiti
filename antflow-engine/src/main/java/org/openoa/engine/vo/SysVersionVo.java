@@ -39,7 +39,7 @@ public class SysVersionVo extends BaseVo implements Serializable {
     /**
     * index
     */
-    private Integer index;
+    private Integer indx;
     /**
      * is force update 0:no,1:yes
     */
@@ -99,5 +99,10 @@ public class SysVersionVo extends BaseVo implements Serializable {
      * related quick entry list
      */
     private List<BaseIdTranStruVo> quickEntryList;
+
+    /**
+     * whether to inherit all related data(app/app data/quick entry) from the previous max index version on creation
+     */
+    private Boolean inheritFromLast;
 
 }

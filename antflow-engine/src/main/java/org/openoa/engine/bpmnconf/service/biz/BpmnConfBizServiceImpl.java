@@ -1111,7 +1111,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 .builder()
                 .id(id.longValue())
                 .appId(confInDb.getAppId())
-                .bpmnType(confInDb.getBpmnType())
+                // bpmnType 由设计器维护,启用以新版本自身存值为准,不从旧有效版本继承
                 .isAll(getIsAll(bpmnConf, confInDb))
                 .effectiveStatus(1)
                 .build());

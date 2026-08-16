@@ -39,4 +39,9 @@ public interface UserMapper {
     BaseIdTranStruVo getLeaderByLeventDepartment(@Param("startUserId") String startUserId,@Param("assignLevelGrade")Integer departmentLevel);
 
     List<BaseIdTranStruVo> queryDepartmentLeaderByIds(List<String> employeeIds);
+
+    /**
+     * 查询用户所在部门及其全部子部门(id+name)
+     */
+    List<BaseIdTranStruVo> queryDepartmentByUserId(@Param("userId") String userId);
 }

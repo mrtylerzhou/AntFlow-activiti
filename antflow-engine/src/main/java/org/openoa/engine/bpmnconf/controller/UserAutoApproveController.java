@@ -34,7 +34,7 @@ public class UserAutoApproveController {
      */
     @PostMapping("/listPage")
     public ResultAndPage<UserAutoApproveVo> listPage(@RequestBody UserAutoApprovePageReq req) {
-        return userAutoApproveBizService.listPage(req.getPageDto(), req.getOwnerUserName(), req.getFormCode());
+        return userAutoApproveBizService.listPage(req.getPageDto(), req.getOwnerUserName(), req.getOwnerUserId(), req.getFormCode());
     }
 
     /**
