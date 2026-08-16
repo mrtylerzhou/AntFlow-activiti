@@ -2,10 +2,15 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmProcessCategory;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SpringBeanUtils;
+import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessCategoryMapper;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessApplicationTypeBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessCategoryService;
@@ -13,6 +18,7 @@ import org.openoa.engine.vo.BpmProcessCategoryVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -164,6 +170,30 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
         List<BpmProcessCategory> bpmProcessCategories = getBaseMapper().selectList(wrapper);
         bpmProcessCategories.sort(Comparator.comparing(BpmProcessCategory::getSort));
         return bpmProcessCategories;
+    }
+
+    /**
+     * query a page list of process category,for pc management page
+     *
+     * @param pageDto paging params
+     * @param vo      filter params
+     * @return paged data
+     */
+    @Override
+    public ResultAndPage<BpmProcessCategoryVo> selectPage(PageDto pageDto, BpmProcessCategoryVo vo) {
+        Page<BpmProcessCategory> page = PageUtils.getPageByPageDto(pageDto);
+        LambdaQueryWrapper<BpmProcessCategory> wrapper = new LambdaQueryWrapper<BpmProcessCategory>()
+                .eq(BpmProcessCategory::getIsDel, 0)
+                .orderByAsc(BpmProcessCategory::getSort);
+        if (StringUtils.hasText(vo.getProcessTypeName())) {
+            wrapper.like(BpmProcessCategory::getProcessTypeName, vo.getProcessTypeName().trim());
+        }
+        Page<BpmProcessCategory> result = this.page(page, wrapper);
+        return PageUtils.getResultAndPage(result, c -> {
+            BpmProcessCategoryVo v = new BpmProcessCategoryVo();
+            BeanUtils.copyProperties(c, v);
+            return v;
+        });
     }
 
     /**

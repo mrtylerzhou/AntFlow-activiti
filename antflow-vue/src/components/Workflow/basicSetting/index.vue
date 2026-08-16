@@ -2,12 +2,12 @@
     <div class="form-container">
         <el-form ref="ruleFormRef" :model="form" :rules="rules" label-width="auto"
             style="max-width: 600px;margin: auto;">
-            <!-- <el-form-item label="流程分组" prop="bpmnType">
-                    <el-select v-model="form.bpmnType" placeholder="请选择分组" :style="{ width: '100%' }">
-                        <el-option v-for="(item, index) in bpmnTypeOptions" :key="index" :label="item.label"
-                            :value="item.value"></el-option>
-                    </el-select>
-                </el-form-item> -->
+            <el-form-item label="流程类型" prop="bpmnType">
+                <el-select v-model="form.bpmnType" placeholder="请选择流程类型" clearable filterable :style="{ width: '100%' }">
+                    <el-option v-for="item in bpmnTypeOptions" :key="item.id" :label="item.processTypeName"
+                        :value="item.id"></el-option>
+                </el-select>
+            </el-form-item>
 
             <!--  <el-form-item label="模板类型" prop="formCode">
                 <el-select filterable v-model="form.formCode" placeholder="请选择模板类型" :style="{ width: '100%' }">
@@ -60,6 +60,7 @@ import { ref, reactive, onMounted, watch, getCurrentInstance } from 'vue'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 import { getDIYFromCodeData } from "@/api/workflow/index";
 import { getLowCodeFlowFormCodes } from "@/api/workflow/lowcodeApi";
+import { getProcessCategoryOptions } from "@/api/workflow/processCategoryApi";
 const { query } = useRoute();
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['nextChange'])
@@ -79,10 +80,11 @@ let props = defineProps({
 const generatorID = "PROJECT_" + NodeUtils.idGenerator();
 const ruleFormRef = ref(null);
 let formCodeOptions = ref([]);
+let bpmnTypeOptions = ref([]);
 const form = reactive({
     bpmnName: '',
     bpmnCode: generatorID,
-    bpmnType: 1,
+    bpmnType: undefined,
     formCode: '',
     remark: '',
     effectiveStatus: false,
@@ -110,6 +112,7 @@ onMounted(async () => {
         form.remark = props.basicData.remark;
         form.deduplicationType = props.basicData.deduplicationType;
         form.viewPageButtons = props.basicData.viewPageButtons;
+        form.bpmnType = props.basicData.bpmnType;
     }
     else {
         form.bpmnCode = generatorID;
@@ -121,6 +124,7 @@ onMounted(async () => {
     } else if (props.flowType == 'LF') {
         getLFFromCodeList();
     }
+    getBpmnTypeList();
 });
 
 /**获取全部DIY FromCode */
@@ -140,6 +144,15 @@ const getLFFromCodeList = async () => {
         loading.value = false;
         if (res.code == 200) {
             formCodeOptions.value = res.data;
+        }
+    });
+}
+
+/**获取流程类型下拉选项 */
+const getBpmnTypeList = async () => {
+    await getProcessCategoryOptions().then((res) => {
+        if (res.code == 200) {
+            bpmnTypeOptions.value = res.data ?? [];
         }
     });
 }

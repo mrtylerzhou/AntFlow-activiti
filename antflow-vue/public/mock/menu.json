@@ -247,6 +247,18 @@
             "noCache": false,
             "link": null
           }
+        },
+        {
+          "name": "processCategory",
+          "path": "processCategory",
+          "hidden": false,
+          "component": "workflow/flowDevOps/processCategory/index",
+          "meta": {
+            "title": "流程分类",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
         }
       ]
     },
