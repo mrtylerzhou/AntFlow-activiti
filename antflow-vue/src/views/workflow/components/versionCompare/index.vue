@@ -145,24 +145,52 @@
                     </div>
                     <div class="vc-detail-scroll">
                       <div v-for="sec in activeSections" :key="sec.name" class="vc-section"
-                        :class="{ 'no-diff': !sec.rows.length }">
+                        :class="{ 'no-diff': !sec.count }">
                         <div class="vc-section-head">
                           <span>{{ sec.name }}</span>
-                          <span class="vc-section-count" v-if="sec.rows.length">{{ sec.rows.length }}</span>
+                          <span class="vc-section-count" v-if="sec.count">{{ sec.count }}</span>
                           <span class="vc-section-none" v-else>无差异</span>
                         </div>
-                        <table class="vc-table vc-table-sm" v-if="sec.rows.length">
-                          <tbody>
-                            <tr v-for="(row, i) in sec.rows" :key="sec.name + i">
-                              <td style="width:150px">{{ row.label }}</td>
-                              <td>
-                                <div class="vc-old">{{ row.source }}</div>
-                                <div class="vc-arrow-inline">↓</div>
-                                <div class="vc-new">{{ row.target }}</div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                        <template v-if="sec.rows.length">
+                          <table class="vc-table vc-table-sm" v-if="plainRows(sec.rows).length">
+                            <tbody>
+                              <tr v-for="(r, ri) in plainRows(sec.rows)" :key="sec.name + 'r' + ri">
+                                <td style="width:150px">{{ r.label }}</td>
+                                <td>
+                                  <div class="vc-old">{{ r.source }}</div>
+                                  <div class="vc-arrow-inline">↓</div>
+                                  <div class="vc-new">{{ r.target }}</div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <!-- 表单权限: 全量字段对照表 -->
+                          <div v-for="g in formPermGroups(sec.rows)" :key="sec.name + g.name" class="vc-perm">
+                            <div class="vc-perm-head">
+                              <span>{{ g.name }}</span>
+                              <span v-if="g.hidden && g.hidden.changed" class="vc-perm-hidden">
+                                整表隐藏: {{ g.hidden.source ? '隐藏' : '不隐藏' }} → {{ g.hidden.target ? '隐藏' : '不隐藏' }}
+                              </span>
+                            </div>
+                            <table class="vc-table vc-table-sm">
+                              <thead>
+                                <tr><th>字段</th><th style="width:110px">源版本</th><th style="width:110px">目标版本</th></tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="f in g.fields" :key="g.name + f.fieldId"
+                                  :class="f.status === 'same' ? 'vc-perm-same' : 'vc-perm-changed'">
+                                  <td>
+                                    {{ f.fieldName }}
+                                    <span v-if="f.status === 'added'" class="vc-perm-tag add">新增</span>
+                                    <span v-else-if="f.status === 'removed'" class="vc-perm-tag del">删除</span>
+                                  </td>
+                                  <td>{{ permName(f.sourcePerm) }}</td>
+                                  <td>{{ permName(f.targetPerm) }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </template>
                       </div>
                     </div>
                   </template>
@@ -283,9 +311,27 @@ const activeResult = computed(() =>
   (result.value?.nodeResults || []).find(r => r.key === activeKey.value) || null);
 const activeSections = computed(() => {
   if (!activeResult.value) return [];
-  return NODE_SECTIONS.map(name => ({ name, rows: activeResult.value.sections.get(name) || [] }))
-    .filter(sec => sec.rows.length || ['基本信息', '审批人设置', '高级设置'].includes(sec.name));
+  return NODE_SECTIONS.map(name => {
+    const rows = activeResult.value.sections.get(name) || [];
+    const count = rows.reduce((n, r) => n + (r.kind === 'formPermTable' ? (r.formPermCount || 0) : 1), 0);
+    return { name, rows, count };
+  }).filter(sec => sec.count || ['基本信息', '审批人设置', '高级设置'].includes(sec.name));
 });
+
+/** 普通差异行(排除表单权限表格行) */
+function plainRows(rows) {
+  return rows.filter(r => r.kind !== 'formPermTable');
+}
+/** 表单权限表格分组(聚合各 formPermTable 行的 groups) */
+function formPermGroups(rows) {
+  const out = [];
+  for (const r of rows) {
+    if (r.kind === 'formPermTable' && Array.isArray(r.groups)) out.push(...r.groups);
+  }
+  return out;
+}
+const PERM_NAMES = { R: '只读', E: '可编辑', H: '隐藏' };
+function permName(p) { return p === null || p === undefined || p === '' ? '(无配置)' : (PERM_NAMES[p] || String(p)); }
 const activeTitle = computed(() => {
   const r = activeResult.value;
   if (!r) return '';
@@ -504,4 +550,24 @@ function nextDiff() {
 .vc-old { color: #a05555; text-decoration: line-through; text-decoration-color: rgba(160, 85, 85, 0.5); }
 .vc-arrow-inline { color: #98a1b0; text-align: center; font-size: 11px; line-height: 14px; }
 .vc-new { color: #2f7d43; font-weight: 500; }
+
+/* 表单字段权限对照表 */
+.vc-perm {
+  margin-bottom: 10px;
+  .vc-perm-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 4px 8px; font-size: 12px; font-weight: 600; color: #4a5568;
+    background: #f5f6f6; border-radius: 4px 4px 0 0;
+    .vc-perm-hidden { font-weight: 400; color: #b7791f; }
+  }
+  .vc-table-sm { border-radius: 0 0 4px 4px; }
+  tr.vc-perm-same { color: #98a1b0; }
+  tr.vc-perm-changed td:first-child { font-weight: 600; color: #b7791f; }
+  .vc-perm-tag {
+    display: inline-block; margin-left: 6px; padding: 0 5px;
+    font-size: 11px; line-height: 16px; border-radius: 3px; color: #fff;
+    &.add { background: #48a868; }
+    &.del { background: #d46a6a; }
+  }
+}
 </style>

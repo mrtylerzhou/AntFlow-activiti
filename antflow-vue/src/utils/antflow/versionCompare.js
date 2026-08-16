@@ -9,7 +9,7 @@
  *   2. 位置锚定兜底: nodeId 配不上, 但"前驱/父已配对" 且名称相同+类型相同 → 仍算同一节点
  *   3. 仍未配对 → 新增/删除
  */
-import { nodeTypeList, signTypeObj } from '@/utils/antflow/const';
+import { nodeTypeList, signTypeObj, setTypes } from '@/utils/antflow/const';
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
 
 // ============ 通用工具 ============
@@ -37,6 +37,9 @@ const VOLATILE_KEYS = new Set([
 
 // ============ 值格式化 ============
 
+/** 审批人类型字典: 与设计器 const.js setTypes 一致(数字含义全量映射) */
+const NODE_PROPERTY_DICT = Object.fromEntries(setTypes.map(x => [x.value, x.label]));
+
 const ENUM_DICTS = {
   'nodeName': null,
   'deduplicationType': { 1: '不去重', 2: '前序去重', 3: '后序去重', 4: '相邻去重' },
@@ -45,7 +48,9 @@ const ENUM_DICTS = {
   'drawBackType': { 0: '不允许撤回', 1: '允许撤回', 2: '撤回至指定节点', 3: '上一步', 4: '撤回至发起人', 5: '指定节点' },
   'disagreeBackType': { 1: '退回发起人', 2: '退回上一步', 3: '流程结束', 4: '退回指定节点', 5: '退回发起人重提' },
   'afterSignUpWay': { 1: '回到审批人', 2: '不回到审批人' },
-  'nodeProperty': { 1: '无', 2: '层层审批', 3: '主管', 4: '角色', 5: '指定成员', 6: 'HRBP' },
+  'nodeProperty': NODE_PROPERTY_DICT,
+  'setType': NODE_PROPERTY_DICT, // 旧字段名, 与 nodeProperty 同语义(formatdisplay 顶层镜像)
+  'batchStatus': { 0: '禁止', 1: '允许' },
   'approvalStandard': { 1: '发起人', 2: '审批人' },
   'satisfiedAction': { 0: '无动作', 1: '推进至固定节点', 2: '加批', 3: '转办', 4: '抄送' },
   'unsatisfiedAction': { 0: '无动作', 1: '推进', 2: '退回' },
@@ -247,7 +252,7 @@ const FIELD_LABELS = {
   'property.loopEndType': '层层审批终止方式', 'property.loopNumberPlies': '层层审批层数', 'property.loopEndGrade': '终止层级',
   'property.loopEndPersonList': '终止人员', 'property.noparticipatingStaffs': '不参与审批人员',
   'property.afterSignUpWay': '加批后处理方式', 'property.noticeConfig': '通知配置',
-  setType: '审批人类型(冗余)', nodeApproveList: '审批人列表', signType: '多人审批方式', directorLevel: '主管层级',
+  setType: '审批人类型', nodeApproveList: '审批人列表', signType: '多人审批方式', directorLevel: '主管层级',
   formAssigneeProperty: '表单选人配置', formInfos: '关联表单字段',
   forwardType: '推进方式', forwardNodeIds: '推进目标节点',
   drawBackType: '撤回/退回方式', drawBackNodeIds: '退回目标节点',
@@ -256,12 +261,25 @@ const FIELD_LABELS = {
   isSignUp: '允许加批', autoSignUpConf: '加批配置', autoTransferConf: '转办配置',
   buttons: '按钮权限', lfFieldControlVOs: '表单字段权限', formHidden: '表单字段隐藏',
   templateVos: '通知模板', approveRemindVo: '审批提醒',
-  remark: '备注', annotation: '批注', batchStatus: '允许批量审批', approvalStandard: '审批基准',
+  remark: '备注', annotation: '批注', batchStatus: '批量审批', approvalStandard: '审批基准',
   noHeaderAction: '隐藏头部操作', isDeduplication: '节点去重', extraFlags: '节点扩展标志',
+  deduplicationExclude: '抗去重（该节点不参与审批人去重）',
   __position: '节点位置',
 };
 
+/**
+ * 顶层镜像字段 → 标准 label(formatdisplay 把 property.* 镜像到节点顶层,
+ * 与 property.* 双报同一变更; 归一到相同 label 后, rows.add 的
+ * "label+源值+目标值" 去重自动只留一行)
+ */
+const MIRROR_LABELS = {
+  nodeProperty: '审批人类型', setType: '审批人类型', signType: '多人审批方式',
+  directorLevel: '主管层级', nodeApproveList: '审批人列表',
+  formAssigneeProperty: '表单选人配置', formInfos: '关联表单字段',
+};
+
 function labelOf(path) {
+  if (MIRROR_LABELS[path]) return MIRROR_LABELS[path];
   if (FIELD_LABELS[path]) return FIELD_LABELS[path];
   const leaf = path.split('.').pop();
   if (FIELD_LABELS[leaf]) return FIELD_LABELS[leaf];
@@ -269,7 +287,7 @@ function labelOf(path) {
 }
 
 /** 递归 diff 一个节点的属性, 产出按 section 分组的差异行 */
-export function diffNodePair(pair, sList, tList) {
+export function diffNodePair(pair, sList, tList, formNameCtx) {
   const sections = new Map(NODE_SECTIONS.map(s => [s, []]));
   const rows = {
     add(sec, path, a, b, kind) {
@@ -306,8 +324,8 @@ export function diffNodePair(pair, sList, tList) {
   const sAnchor = anchorSignature(pair.source, sList), tAnchor = anchorSignature(pair.target, tList);
   if (sAnchor.key !== tAnchor.key) rows.add('基本信息', '__position', sAnchor.desc, tAnchor.desc, 'position');
 
-  // 属性字段 diff(递归); nodeName/nodeDisplayName/nodeType/labelList 已在上方显式处理, 跳过避免重复
-  const explicitHandled = new Set(['nodeName', 'nodeDisplayName', 'nodeType', 'labelList']);
+  // 属性字段 diff(递归); 显式处理的字段跳过避免重复
+  const explicitHandled = new Set(['nodeName', 'nodeDisplayName', 'nodeType', 'labelList', 'lfFieldControlVOs', 'formHidden']);
   const keys = new Set([...Object.keys(s || {}), ...Object.keys(t || {})]);
   for (const k of keys) {
     if (VOLATILE_KEYS.has(k) || explicitHandled.has(k)) continue;
@@ -315,6 +333,18 @@ export function diffNodePair(pair, sList, tList) {
     if (deepEqual(a, b)) continue;
     diffValueToRows(a, b, k, rows);
   }
+
+  // 表单字段权限: 结构化表格(不走通用 JSON diff)
+  const permTable = diffFormPerms(s, t, formNameCtx);
+  if (permTable) {
+    rows.add('表单权限', 'lfFieldControlVOs', null, null, 'formPermTable');
+    const list = sections.get('表单权限');
+    const r = list[list.length - 1];
+    r.groups = permTable.groups;
+    r.hiddenDiff = permTable.hiddenDiff;
+    r.formPermCount = permTable.groups.reduce((n, g) => n + g.fields.filter(f => f.status !== 'same').length, 0) + (permTable.hiddenDiff ? 1 : 0);
+  }
+
   return sections;
 }
 
@@ -390,6 +420,74 @@ function diffValueToRows(a, b, path, rows) {
   rows.add(sec, path, fmtValue(a, path), fmtValue(b, path));
 }
 function isPlainObj(v) { return v !== null && typeof v === 'object' && !Array.isArray(v); }
+
+/**
+ * 表单字段权限 diff → 结构化表格数据
+ * - lfFieldControlVOs: 内联模式 [{fieldId, fieldName, perm}]; 外部多表单模式 [{formdataId, fieldId, fieldName, perm}]
+ * - formHidden: 外部多表单整表隐藏 { formdataId: bool }
+ * - 字段对齐键 fieldId, 全量对照(含未变); perm 汉字化由渲染层做(R/E/H → 只读/可编辑/隐藏)
+ * @returns null(两版均无权限配置) | { groups: [{name, hidden|null, fields:[{fieldId, fieldName, sourcePerm, targetPerm, status}]}], hiddenDiff }
+ */
+function diffFormPerms(sNode, tNode, formNameCtx) {
+  const sPerms = Array.isArray(sNode?.lfFieldControlVOs) ? sNode.lfFieldControlVOs : [];
+  const tPerms = Array.isArray(tNode?.lfFieldControlVOs) ? tNode.lfFieldControlVOs : [];
+  const sHidden = (sNode?.formHidden && typeof sNode.formHidden === 'object') ? sNode.formHidden : {};
+  const tHidden = (tNode?.formHidden && typeof tNode.formHidden === 'object') ? tNode.formHidden : {};
+  if (!sPerms.length && !tPerms.length && !Object.keys(sHidden).length && !Object.keys(tHidden).length) return null;
+
+  const INLINE = '__inline__';
+  const groupKey = (p) => (p.formdataId !== undefined && p.formdataId !== null) ? String(p.formdataId) : INLINE;
+  const groupName = (key, idx) => key === INLINE ? '主表单' : (formNameCtx?.formNames?.[key] || `表单${idx + 1}`);
+
+  const sGroups = new Map(), tGroups = new Map();
+  for (const p of sPerms) { const k = groupKey(p); if (!sGroups.has(k)) sGroups.set(k, []); sGroups.get(k).push(p); }
+  for (const p of tPerms) { const k = groupKey(p); if (!tGroups.has(k)) tGroups.set(k, []); tGroups.get(k).push(p); }
+
+  const allKeys = [...new Set([...sGroups.keys(), ...tGroups.keys()])];
+  const groups = [];
+  let hiddenDiff = false;
+  allKeys.forEach((key, idx) => {
+    const sList = sGroups.get(key) || [], tList = tGroups.get(key) || [];
+    const sMap = new Map(sList.map(p => [String(p.fieldId), p]));
+    const tMap = new Map(tList.map(p => [String(p.fieldId), p]));
+    const fieldIds = [...new Set([...sMap.keys(), ...tMap.keys()])];
+    const fields = fieldIds.map(fid => {
+      const sw = sMap.get(fid), tw = tMap.get(fid);
+      if (sw && !tw) return { fieldId: fid, fieldName: sw.fieldName || fid, sourcePerm: sw.perm, targetPerm: null, status: 'removed' };
+      if (!sw && tw) return { fieldId: fid, fieldName: tw.fieldName || fid, sourcePerm: null, targetPerm: tw.perm, status: 'added' };
+      return {
+        fieldId: fid, fieldName: tw.fieldName || sw.fieldName || fid,
+        sourcePerm: sw.perm, targetPerm: tw.perm,
+        status: sw.perm === tw.perm ? 'same' : 'changed',
+      };
+    });
+    // 整表隐藏: 仅外部多表单有(formdataId → formHidden)
+    const hidKey = key === INLINE ? null : key;
+    if (hidKey !== null) {
+      const sH = !!sHidden[hidKey], tH = !!tHidden[hidKey];
+      const changed = sH !== tH;
+      if (changed) hiddenDiff = true;
+      groups.push({ name: groupName(key, idx), hidden: { source: sH, target: tH, changed }, fields });
+    } else {
+      groups.push({ name: groupName(key, idx), hidden: null, fields });
+    }
+  });
+  return { groups, hiddenDiff };
+}
+
+/** formdataId → formdataName 映射(多表单分组名, 与表单差异 tab 对齐) */
+function buildFormNameMap(...confs) {
+  const m = {};
+  for (const c of confs) {
+    if (!c || !Array.isArray(c.lfFormdataList)) continue;
+    for (const f of c.lfFormdataList) {
+      if (f.formdataId === undefined || f.formdataId === null) continue;
+      const k = String(f.formdataId);
+      m[k] = f.formdataName || f.name || m[k];
+    }
+  }
+  return m;
+}
 
 export function nodeTypeName(t) { return nodeTypeList?.[t] || `类型${t}`; }
 export function nodeTitle(n) {
@@ -553,10 +651,13 @@ export function compareConfs(sourceRaw, targetRaw) {
   orderedKeys.sort((a, b) => a[2] - b[2]);
 
   let nodeDiffCount = 0;
+  const formNameCtx = { formNames: buildFormNameMap(sourceRaw, targetRaw) };
   for (const [key, pair] of orderedKeys) {
-    const sections = diffNodePair(pair, sList, tList);
+    const sections = diffNodePair(pair, sList, tList, formNameCtx);
     let cnt = 0;
-    for (const rows of sections.values()) cnt += rows.length;
+    for (const rows of sections.values()) {
+      for (const r of rows) cnt += (r.kind === 'formPermTable' ? (r.formPermCount || 0) : 1);
+    }
     if (pair.status === 'modified' && cnt === 0) pair.status = 'same';
     else nodeDiffCount++;
     // 回写状态到树节点供渲染高亮
