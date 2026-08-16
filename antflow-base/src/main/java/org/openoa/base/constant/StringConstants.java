@@ -89,5 +89,6 @@ public class StringConstants {
         public static String PROCERSS_NUMBER = "processNumber";
         public static String Is_OUTSIDEPROC = "isOutsideProc";
         public static String BPMN_NAME = "bpmnName";
+        public static final String AF_DEFAULT_VAR_NAME ="general";
     }
 }
