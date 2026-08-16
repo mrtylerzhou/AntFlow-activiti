@@ -83,6 +83,7 @@
                                     <template #dropdown>
                                         <el-dropdown-menu>
                                             <el-dropdown-item command="dopeSheet">Dope Sheet</el-dropdown-item>
+                                            <el-dropdown-item command="versionCompare">版本比较</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </template>
                                 </el-dropdown>
@@ -157,6 +158,7 @@
                                     <template #dropdown>
                                         <el-dropdown-menu>
                                             <el-dropdown-item command="dopeSheet">Dope Sheet</el-dropdown-item>
+                                            <el-dropdown-item command="versionCompare">版本比较</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </template>
                                 </el-dropdown>
@@ -202,6 +204,8 @@
 
         <set-msg-drawer v-model:visible="openFlowMsgDialog" :formMsgData="formMsgData" @refresh="refreshList" />
         <view-form-drawer v-model:visible="open" :viewFormData="viewFormData" />
+        <version-compare-dialog v-model:visible="openVersionCompare" :formCode="versionCompareRow?.key || ''"
+            :formName="versionCompareRow?.value || ''" />
     </div>
 </template>
 
@@ -210,6 +214,7 @@ import { ref, onMounted } from "vue";
 import { ArrowDown } from '@element-plus/icons-vue';
 import SetMsgDrawer from './setMsgDrawer.vue';
 import ViewFormDrawer from './viewFormDrawer.vue';
+import VersionCompareDialog from '@/views/workflow/components/versionCompare/index.vue';
 import { getDIYFromCodeData } from "@/api/workflow/index";
 import { createLFFormCode, getLFFormCodePageList, createDIYFormCode, getDIYFormCodePageList } from '@/api/workflow/lowcodeApi';
 import { useDopeSheetStore } from '@/store/modules/dopeSheet';
@@ -410,6 +415,9 @@ const handleEfficiency = (row) => {
 
 /** 更多下拉菜单命令处理 */
 const dopeSheetStore = useDopeSheetStore();
+// 版本比较
+const openVersionCompare = ref(false);
+const versionCompareRow = ref(null);
 const handleMoreCommand = (command, row) => {
     if (command === 'dopeSheet') {
         dopeSheetStore.init({
@@ -419,6 +427,9 @@ const handleMoreCommand = (command, row) => {
         });
         const obj = { path: "/workflow/dopeSheet", query: { formCode: row.key } };
         proxy.$tab.openPage(obj);
+    } else if (command === 'versionCompare') {
+        versionCompareRow.value = row;
+        openVersionCompare.value = true;
     }
 }
 

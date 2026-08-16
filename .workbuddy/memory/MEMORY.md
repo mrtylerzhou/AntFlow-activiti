@@ -8,6 +8,7 @@
 - 表单适配器: `FormFactory.getFormAdaptor(vo)` 返回 `FormOperationAdaptor<T extends BusinessDataVo>`, 适配器由 `@ActivitiServiceAnno(svcName=formCode)` 注解注册.
 - 低代码流程的统一 formCode = `LOWFLOW_FORM_CODE`, 适配器 = `LowFlowApprovalService`, 实体 = `UDLFApplyVo`, 字段在 `lfFields` / `lfFieldsMulti` Map 中; 外部分多表单模式用 `lfFieldsMulti`.
 - DIY 流程: formCode 即业务标识, 适配器继承 `AbstractFormOperationAdaptor<BizXxxVo>`, 实体是 `BusinessDataVo` 子类, 字段是子类 declared fields.
+- 版本存储: 每版本 = `t_bpmn_conf` 一行(`edit()` 恒 insert 新行, 主键必变); `bpmn_code` 编码版本号. `t_bpmn_node.node_id`(String 列, 前端 idGenerator 生成, 保存透传)拷贝链路下**跨版本稳定** → 版本比较节点对齐的第一优先键; 版本列表 `POST /bpmnConf/listPage`(带 formCode), 详情 `GET /bpmnConf/detail/{id}` → BpmnConfVo 全量(nodes/lfFormData/confConfigJson/extraFlags).
 
 ## 重要文件索引
 
