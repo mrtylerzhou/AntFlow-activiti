@@ -9,7 +9,7 @@
  *   2. 位置锚定兜底: nodeId 配不上, 但"前驱/父已配对" 且名称相同+类型相同 → 仍算同一节点
  *   3. 仍未配对 → 新增/删除
  */
-import { nodeTypeList, signTypeObj, setTypes } from '@/utils/antflow/const';
+import { nodeTypeList, signTypeObj, setTypes, approvalPageButtons, nodeViewPageButtons } from '@/utils/antflow/const';
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
 
 // ============ 通用工具 ============
@@ -325,7 +325,7 @@ export function diffNodePair(pair, sList, tList, formNameCtx) {
   if (sAnchor.key !== tAnchor.key) rows.add('基本信息', '__position', sAnchor.desc, tAnchor.desc, 'position');
 
   // 属性字段 diff(递归); 显式处理的字段跳过避免重复
-  const explicitHandled = new Set(['nodeName', 'nodeDisplayName', 'nodeType', 'labelList', 'lfFieldControlVOs', 'formHidden']);
+  const explicitHandled = new Set(['nodeName', 'nodeDisplayName', 'nodeType', 'labelList', 'lfFieldControlVOs', 'formHidden', 'buttons']);
   const keys = new Set([...Object.keys(s || {}), ...Object.keys(t || {})]);
   for (const k of keys) {
     if (VOLATILE_KEYS.has(k) || explicitHandled.has(k)) continue;
@@ -334,15 +334,18 @@ export function diffNodePair(pair, sList, tList, formNameCtx) {
     diffValueToRows(a, b, k, rows);
   }
 
-  // 表单字段权限: 结构化表格(不走通用 JSON diff)
+  // 表单字段权限 + 按钮权限: 结构化表格(不走通用 JSON diff)
   const permTable = diffFormPerms(s, t, formNameCtx);
   if (permTable) {
-    rows.add('表单权限', 'lfFieldControlVOs', null, null, 'formPermTable');
+    rows.add('表单权限', 'lfFieldControlVOs', null, null, 'table');
     const list = sections.get('表单权限');
-    const r = list[list.length - 1];
-    r.groups = permTable.groups;
-    r.hiddenDiff = permTable.hiddenDiff;
-    r.formPermCount = permTable.groups.reduce((n, g) => n + g.fields.filter(f => f.status !== 'same').length, 0) + (permTable.hiddenDiff ? 1 : 0);
+    Object.assign(list[list.length - 1], permTable);
+  }
+  const btnTable = diffButtons(s, t);
+  if (btnTable) {
+    rows.add('按钮权限', 'buttons', null, null, 'table');
+    const list = sections.get('按钮权限');
+    Object.assign(list[list.length - 1], btnTable);
   }
 
   return sections;
@@ -422,12 +425,15 @@ function diffValueToRows(a, b, path, rows) {
 function isPlainObj(v) { return v !== null && typeof v === 'object' && !Array.isArray(v); }
 
 /**
- * 表单字段权限 diff → 结构化表格数据
+ * 表单字段权限 diff → 结构化表格数据(与按钮权限共用同一渲染结构)
  * - lfFieldControlVOs: 内联模式 [{fieldId, fieldName, perm}]; 外部多表单模式 [{formdataId, fieldId, fieldName, perm}]
  * - formHidden: 外部多表单整表隐藏 { formdataId: bool }
- * - 字段对齐键 fieldId, 全量对照(含未变); perm 汉字化由渲染层做(R/E/H → 只读/可编辑/隐藏)
- * @returns null(两版均无权限配置) | { groups: [{name, hidden|null, fields:[{fieldId, fieldName, sourcePerm, targetPerm, status}]}], hiddenDiff }
+ * - 字段对齐键 fieldId, 全量对照(含未变); perm 汉字化(R/E/H → 只读/可编辑/隐藏)
+ * @returns null(两版均无权限配置) | { tableType:'formPerm', groups:[{name, hidden|null, fields:[{key,label,source,target,status,tag}]}], diffCount }
  */
+const PERM_NAMES = { R: '只读', E: '可编辑', H: '隐藏' };
+function permName(p) { return p === null || p === undefined || p === '' ? '(无配置)' : (PERM_NAMES[p] || String(p)); }
+
 function diffFormPerms(sNode, tNode, formNameCtx) {
   const sPerms = Array.isArray(sNode?.lfFieldControlVOs) ? sNode.lfFieldControlVOs : [];
   const tPerms = Array.isArray(tNode?.lfFieldControlVOs) ? tNode.lfFieldControlVOs : [];
@@ -453,13 +459,12 @@ function diffFormPerms(sNode, tNode, formNameCtx) {
     const fieldIds = [...new Set([...sMap.keys(), ...tMap.keys()])];
     const fields = fieldIds.map(fid => {
       const sw = sMap.get(fid), tw = tMap.get(fid);
-      if (sw && !tw) return { fieldId: fid, fieldName: sw.fieldName || fid, sourcePerm: sw.perm, targetPerm: null, status: 'removed' };
-      if (!sw && tw) return { fieldId: fid, fieldName: tw.fieldName || fid, sourcePerm: null, targetPerm: tw.perm, status: 'added' };
-      return {
-        fieldId: fid, fieldName: tw.fieldName || sw.fieldName || fid,
-        sourcePerm: sw.perm, targetPerm: tw.perm,
-        status: sw.perm === tw.perm ? 'same' : 'changed',
-      };
+      let status, source, target, tag = '';
+      let label = fid;
+      if (sw && !tw) { status = 'removed'; source = permName(sw.perm); target = '(无配置)'; tag = '删除'; label = sw.fieldName || fid; }
+      else if (!sw && tw) { status = 'added'; source = '(无配置)'; target = permName(tw.perm); tag = '新增'; label = tw.fieldName || fid; }
+      else { status = sw.perm === tw.perm ? 'same' : 'changed'; source = permName(sw.perm); target = permName(tw.perm); label = tw.fieldName || sw.fieldName || fid; }
+      return { key: fid, label, source, target, status, tag };
     });
     // 整表隐藏: 仅外部多表单有(formdataId → formHidden)
     const hidKey = key === INLINE ? null : key;
@@ -472,7 +477,45 @@ function diffFormPerms(sNode, tNode, formNameCtx) {
       groups.push({ name: groupName(key, idx), hidden: null, fields });
     }
   });
-  return { groups, hiddenDiff };
+  const diffCount = groups.reduce((n, g) => n + g.fields.filter(f => f.status !== 'same').length, 0) + (hiddenDiff ? 1 : 0);
+  return { tableType: 'formPerm', groups, diffCount };
+}
+
+/**
+ * 按钮权限 diff → 结构化表格(与表单权限共用渲染结构)
+ * - node.buttons = { approvalPage: [{buttonType, buttonName}], viewPage: [...] }(buttonType 为审批按钮枚举值)
+ * - 按钮枚举固定(approvalPageButtons/nodeViewPageButtons), 逐按钮对照「显示/隐藏/自定义名称」
+ * @returns null(两版均无按钮配置) | { tableType:'buttons', groups:[{name, fields:[{key,label,source,target,status,tag}]}], diffCount }
+ */
+function diffButtons(sNode, tNode) {
+  const sBtns = (sNode?.buttons && typeof sNode.buttons === 'object') ? sNode.buttons : {};
+  const tBtns = (tNode?.buttons && typeof tNode.buttons === 'object') ? tNode.buttons : {};
+  const hasAny = (b) => (Array.isArray(b.approvalPage) && b.approvalPage.length) || (Array.isArray(b.viewPage) && b.viewPage.length);
+  if (!hasAny(sBtns) && !hasAny(tBtns)) return null;
+
+  const btnText = (item, defLabel) => {
+    if (!item) return '隐藏';
+    const name = item.buttonName || '';
+    return name && name !== defLabel ? `显示·${name}` : '显示';
+  };
+  const groups = [
+    { name: '审批页面', defs: approvalPageButtons || [], sList: sBtns.approvalPage || [], tList: tBtns.approvalPage || [] },
+    { name: '查看页面', defs: nodeViewPageButtons || [], sList: sBtns.viewPage || [], tList: tBtns.viewPage || [] },
+  ];
+  const out = [];
+  for (const g of groups) {
+    if (!g.defs.length) continue;
+    const sMap = new Map(g.sList.map(b => [b.buttonType, b]));
+    const tMap = new Map(g.tList.map(b => [b.buttonType, b]));
+    const fields = g.defs.map(opt => {
+      const sText = btnText(sMap.get(opt.value), opt.label);
+      const tText = btnText(tMap.get(opt.value), opt.label);
+      return { key: opt.value, label: opt.label, source: sText, target: tText, status: sText === tText ? 'same' : 'changed', tag: '' };
+    });
+    out.push({ name: g.name, fields });
+  }
+  const diffCount = out.reduce((n, g) => n + g.fields.filter(f => f.status !== 'same').length, 0);
+  return { tableType: 'buttons', groups: out, diffCount };
 }
 
 /** formdataId → formdataName 映射(多表单分组名, 与表单差异 tab 对齐) */
@@ -656,7 +699,7 @@ export function compareConfs(sourceRaw, targetRaw) {
     const sections = diffNodePair(pair, sList, tList, formNameCtx);
     let cnt = 0;
     for (const rows of sections.values()) {
-      for (const r of rows) cnt += (r.kind === 'formPermTable' ? (r.formPermCount || 0) : 1);
+      for (const r of rows) cnt += (r.kind === 'table' ? (r.diffCount || 0) : 1);
     }
     if (pair.status === 'modified' && cnt === 0) pair.status = 'same';
     else nodeDiffCount++;

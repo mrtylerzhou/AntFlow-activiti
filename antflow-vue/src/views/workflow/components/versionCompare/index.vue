@@ -164,32 +164,33 @@
                               </tr>
                             </tbody>
                           </table>
-                          <!-- 表单权限: 全量字段对照表 -->
-                          <div v-for="g in formPermGroups(sec.rows)" :key="sec.name + g.name" class="vc-perm">
-                            <div class="vc-perm-head">
-                              <span>{{ g.name }}</span>
-                              <span v-if="g.hidden && g.hidden.changed" class="vc-perm-hidden">
-                                整表隐藏: {{ g.hidden.source ? '隐藏' : '不隐藏' }} → {{ g.hidden.target ? '隐藏' : '不隐藏' }}
-                              </span>
+                          <!-- 表单权限/按钮权限: 结构化对照表(字段或按钮 | 源版本 | 目标版本) -->
+                          <template v-for="r in tableRows(sec.rows)" :key="sec.name + r.tableType">
+                            <div v-for="g in r.groups" :key="g.name" class="vc-perm">
+                              <div class="vc-perm-head">
+                                <span>{{ g.name }}</span>
+                                <span v-if="g.hidden && g.hidden.changed" class="vc-perm-hidden">
+                                  整表隐藏: {{ g.hidden.source ? '隐藏' : '不隐藏' }} → {{ g.hidden.target ? '隐藏' : '不隐藏' }}
+                                </span>
+                              </div>
+                              <table class="vc-table vc-table-sm">
+                                <thead>
+                                  <tr><th>{{ r.tableType === 'buttons' ? '按钮' : '字段' }}</th><th style="width:110px">源版本</th><th style="width:110px">目标版本</th></tr>
+                                </thead>
+                                <tbody>
+                                  <tr v-for="f in g.fields" :key="g.name + f.key"
+                                    :class="f.status === 'same' ? 'vc-perm-same' : 'vc-perm-changed'">
+                                    <td>
+                                      {{ f.label }}
+                                      <span v-if="f.tag" class="vc-perm-tag" :class="f.tag === '删除' ? 'del' : 'add'">{{ f.tag }}</span>
+                                    </td>
+                                    <td>{{ f.source }}</td>
+                                    <td>{{ f.target }}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
                             </div>
-                            <table class="vc-table vc-table-sm">
-                              <thead>
-                                <tr><th>字段</th><th style="width:110px">源版本</th><th style="width:110px">目标版本</th></tr>
-                              </thead>
-                              <tbody>
-                                <tr v-for="f in g.fields" :key="g.name + f.fieldId"
-                                  :class="f.status === 'same' ? 'vc-perm-same' : 'vc-perm-changed'">
-                                  <td>
-                                    {{ f.fieldName }}
-                                    <span v-if="f.status === 'added'" class="vc-perm-tag add">新增</span>
-                                    <span v-else-if="f.status === 'removed'" class="vc-perm-tag del">删除</span>
-                                  </td>
-                                  <td>{{ permName(f.sourcePerm) }}</td>
-                                  <td>{{ permName(f.targetPerm) }}</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
+                          </template>
                         </template>
                       </div>
                     </div>
@@ -313,25 +314,19 @@ const activeSections = computed(() => {
   if (!activeResult.value) return [];
   return NODE_SECTIONS.map(name => {
     const rows = activeResult.value.sections.get(name) || [];
-    const count = rows.reduce((n, r) => n + (r.kind === 'formPermTable' ? (r.formPermCount || 0) : 1), 0);
+    const count = rows.reduce((n, r) => n + (r.kind === 'table' ? (r.diffCount || 0) : 1), 0);
     return { name, rows, count };
   }).filter(sec => sec.count || ['基本信息', '审批人设置', '高级设置'].includes(sec.name));
 });
 
-/** 普通差异行(排除表单权限表格行) */
+/** 普通差异行(排除结构化表格行) */
 function plainRows(rows) {
-  return rows.filter(r => r.kind !== 'formPermTable');
+  return rows.filter(r => r.kind !== 'table');
 }
-/** 表单权限表格分组(聚合各 formPermTable 行的 groups) */
-function formPermGroups(rows) {
-  const out = [];
-  for (const r of rows) {
-    if (r.kind === 'formPermTable' && Array.isArray(r.groups)) out.push(...r.groups);
-  }
-  return out;
+/** 结构化对照表行(表单权限/按钮权限, 引擎已统一为 tableType+groups 结构) */
+function tableRows(rows) {
+  return rows.filter(r => r.kind === 'table');
 }
-const PERM_NAMES = { R: '只读', E: '可编辑', H: '隐藏' };
-function permName(p) { return p === null || p === undefined || p === '' ? '(无配置)' : (PERM_NAMES[p] || String(p)); }
 const activeTitle = computed(() => {
   const r = activeResult.value;
   if (!r) return '';
