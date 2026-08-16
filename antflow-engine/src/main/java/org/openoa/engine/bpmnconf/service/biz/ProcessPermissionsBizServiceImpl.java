@@ -8,7 +8,7 @@ import org.openoa.base.dto.PageDto;
 import org.openoa.base.dto.ProcessPermissionsPageReq;
 import org.openoa.base.entity.BpmProcessPermissions;
 import org.openoa.base.entity.BpmnConf;
-import org.openoa.base.entity.Department;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.mapper.RoleMapper;
 import org.openoa.base.service.AfDepartmentService;
@@ -139,15 +139,15 @@ public class ProcessPermissionsBizServiceImpl {
             }
         }
         //3. 部门名称: objectType=2 -> name
-        List<Integer> depIds = records.stream()
+        List<String> depIds = records.stream()
                 .filter(e -> Integer.valueOf(2).equals(e.getObjectType()))
                 .map(BpmProcessPermissions::getObjectId)
-                .filter(StringUtils::hasText).map(Integer::valueOf).distinct().collect(Collectors.toList());
-        Map<Integer, String> depId2Name = new HashMap<>();
+                .filter(StringUtils::hasText).distinct().collect(Collectors.toList());
+        Map<String, String> depId2Name = new HashMap<>();
         if (!CollectionUtils.isEmpty(depIds)) {
-            List<Department> deps = afDepartmentService.getByIds(depIds);
+            List<BaseIdTranStruVo> deps = afDepartmentService.getByIds(depIds);
             if (!CollectionUtils.isEmpty(deps)) {
-                for (Department d : deps) {
+                for (BaseIdTranStruVo d : deps) {
                     depId2Name.putIfAbsent(d.getId(), d.getName());
                 }
             }
@@ -191,7 +191,7 @@ public class ProcessPermissionsBizServiceImpl {
             } else if (objectType == 3) {
                 objectName = roleId2Name.getOrDefault(e.getObjectId(), e.getObjectId());
             } else if (objectType == 2) {
-                objectName = depId2Name.getOrDefault(Integer.valueOf(e.getObjectId()), e.getObjectId());
+                objectName = depId2Name.getOrDefault(e.getObjectId(), e.getObjectId());
             } else {
                 objectName = userId2Name.getOrDefault(e.getObjectId(), e.getObjectId());
             }
@@ -224,10 +224,10 @@ public class ProcessPermissionsBizServiceImpl {
      * 根据部门名称关键字查询匹配的部门id集合
      */
     private List<String> resolveDepIdsByName(String name) {
-        List<Department> deps = afDepartmentService.queryByNameFuzzy(name);
+        List<BaseIdTranStruVo> deps = afDepartmentService.queryByNameFuzzy(name);
         return CollectionUtils.isEmpty(deps)
                 ? Collections.emptyList()
-                : deps.stream().map(d -> String.valueOf(d.getId())).collect(Collectors.toList());
+                : deps.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
     }
 
     /**

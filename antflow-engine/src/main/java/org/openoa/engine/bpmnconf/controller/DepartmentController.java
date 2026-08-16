@@ -2,8 +2,8 @@ package org.openoa.engine.bpmnconf.controller;
 
 import org.openoa.base.entity.Department;
 import org.openoa.base.entity.Result;
-import org.openoa.base.service.AfDepartmentService;
 import org.openoa.base.vo.ResultAndPage;
+import org.openoa.engine.bpmnconf.service.impl.DepartmentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,14 +20,14 @@ import java.util.List;
 public class DepartmentController {
 
     @Autowired
-    private AfDepartmentService departmentService;
+    private DepartmentServiceImpl departmentService;
 
     /**
      * 分页查询部门
      */
     @RequestMapping("/getDepartmentPageList")
     public ResultAndPage<Department> getDepartmentPageList(Integer page, Integer pageSize, String name) {
-        return departmentService.getDepartmentPageList(page, pageSize, name);
+        return departmentService.getDepartmentPageListWithDetail(page, pageSize, name);
     }
 
     /**
@@ -35,7 +35,7 @@ public class DepartmentController {
      */
     @RequestMapping("/queryByNameFuzzy")
     public Result<List<Department>> queryByNameFuzzy(String name) {
-        return Result.newSuccessResult(departmentService.queryByNameFuzzy(name));
+        return Result.newSuccessResult(departmentService.queryByNameFuzzyWithDetail(name));
     }
 
     /**
@@ -43,7 +43,7 @@ public class DepartmentController {
      */
     @RequestMapping("/getByIds")
     public Result<List<Department>> getByIds(List<Integer> ids) {
-        return Result.newSuccessResult(departmentService.getByIds(ids));
+        return Result.newSuccessResult(departmentService.getByIdsWithDetail(ids));
     }
 
     /**
@@ -51,6 +51,6 @@ public class DepartmentController {
      */
     @RequestMapping("/getDepartmentsByParentId")
     public Result<List<Department>> getDepartmentsByParentId(Integer parentId) {
-        return Result.newSuccessResult(departmentService.getDepartmentsByParentId(parentId));
+        return Result.newSuccessResult(departmentService.getDepartmentsByParentIdWithDetail(parentId));
     }
 }
