@@ -2062,6 +2062,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnNodeVo.setDeduplicationExclude(true);
                 bpmnNodeVo.setIsConditionCopyNode(true);
             }
+            //抗去重: 自动/条件语义节点(自动推进/自动退回/条件推进/条件完成/条件拒绝/条件自动加批/条件自动转办/条件退回等)服务端强制排除去重
+            if (NodeUtil.isAutoConditionNode(labelVOList)) {
+                bpmnNodeVo.setDeduplicationExclude(true);
+            }
             bpmnNodeVo.setLabelList(labelVOList);
 
         }
@@ -2245,6 +2249,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             if (NodeUtil.nodeLabelContainsAny(labelVOList, NodeLabelConstants.conditionCopyNode.getLabelValue())) {
                 bpmnNodeVo.setDeduplicationExclude(true);
                 bpmnNodeVo.setIsConditionCopyNode(true);
+            }
+            //抗去重: 自动/条件语义节点(自动推进/自动退回/条件推进/条件完成/条件拒绝/条件自动加批/条件自动转办/条件退回等)服务端强制排除去重
+            if (NodeUtil.isAutoConditionNode(labelVOList)) {
+                bpmnNodeVo.setDeduplicationExclude(true);
             }
             if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.prevNodeAppointed.getLabelValue())){
                 bpmnNodeVo.setIsPrevNodeAppointed(true);

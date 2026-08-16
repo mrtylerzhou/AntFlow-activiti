@@ -53,12 +53,15 @@ const batchProhibited = computed({
 
 /**
  * 抗去重是否锁死(只读常开):
- * 条件审批(12)、发起人自己(property 12)、被审批人自己(property 15)由服务端强制排除去重
+ * 条件审批家族(12: 条件审批/条件推进/条件完成/条件拒绝/条件自动加批/条件自动转办)、
+ * 条件退回(20)、条件退回发起人(21)、发起人自己(property 12)、被审批人自己(property 15)
+ * 由服务端强制排除去重
  */
 const isAntiDedupLocked = computed(() => {
     const cfg = props.approverConfig;
     if (!cfg) return false;
-    return cfg.nodeType === 12 || cfg.nodeProperty === 12 || cfg.nodeProperty === 15;
+    return cfg.nodeType === 12 || cfg.nodeType === 20 || cfg.nodeType === 21
+        || cfg.nodeProperty === 12 || cfg.nodeProperty === 15;
 });
 
 /** 节点切换时反显流程标签 */
