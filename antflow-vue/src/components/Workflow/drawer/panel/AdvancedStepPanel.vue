@@ -14,6 +14,13 @@
             <el-switch v-model="batchProhibited" active-text="禁止批量审批" />
             <p class="tip">开启后，该节点的待办任务不允许被批量同意</p>
         </div>
+        <div class="setting-group">
+            <p class="setting-group-title">抗去重</p>
+            <el-switch v-model="props.approverConfig.deduplicationExclude"
+                :disabled="isAntiDedupLocked"
+                active-text="该节点不参与审批人去重" />
+            <p class="tip">{{ isAntiDedupLocked ? '该节点类型天然不参与审批人去重' : '开启后，该节点不参与全流程审批人去重（自身不会被去重，其审批人也不作为其他节点的去重基准）' }}</p>
+        </div>
     </div>
 </template>
 <script setup>
@@ -42,6 +49,16 @@ const batchProhibited = computed({
             props.approverConfig.batchStatus = val ? 0 : 1;
         }
     }
+});
+
+/**
+ * 抗去重是否锁死(只读常开):
+ * 条件审批(12)、发起人自己(property 12)、被审批人自己(property 15)由服务端强制排除去重
+ */
+const isAntiDedupLocked = computed(() => {
+    const cfg = props.approverConfig;
+    if (!cfg) return false;
+    return cfg.nodeType === 12 || cfg.nodeProperty === 12 || cfg.nodeProperty === 15;
 });
 
 /** 节点切换时反显流程标签 */

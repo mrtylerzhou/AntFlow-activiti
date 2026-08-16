@@ -106,6 +106,15 @@
             <el-tab-pane lazy label="通知设置" name="noticeStep">
                 <notice-conf v-if="noticeStepShow" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
             </el-tab-pane>
+            <el-tab-pane lazy v-if="copyerConfig.nodeType === 13" label="高级设置" name="advancedStep">
+                <div class="advanced-setting-content">
+                    <div class="setting-group">
+                        <p class="setting-group-title">抗去重</p>
+                        <el-switch :model-value="true" disabled active-text="该节点不参与审批人去重" />
+                        <p class="tip">条件抄送节点天然不参与审批人去重</p>
+                    </div>
+                </div>
+            </el-tab-pane>
         </el-tabs>
         <div class="demo-drawer__footer clear">
             <el-button type="primary" @click="saveCopyer">确 定</el-button>
