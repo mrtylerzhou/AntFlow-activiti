@@ -186,6 +186,9 @@ export class FormatCommitUtils {
           approveObj.loopEndPersonList = node.property?.loopEndPersonList || [];
           approveObj.loopEndPersonObjList = node.property?.loopEndPersonObjList || [];
           approveObj.loopEndGrade = node.property?.loopEndGrade || 0;
+        } else if (node.setType == 20) {
+          // 根据标签选择: 透传 labelBasedApproverRule (标签名/标签key/自定义变量组) 到 property
+          approveObj.labelBasedApproverRule = node.property?.labelBasedApproverRule ?? null;
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
         approveObj.signUpType = node.property?.signUpType ?? 1;

@@ -74,6 +74,7 @@ export let setTypes = [
   { value: 17, label: "自定义" },
   { value: 18, label: "上一节点审批人的" },
   { value: 19, label: "上一节点指定" },
+  { value: 20, label: "根据标签选择" },
 ];
 export let setCopyerTypes = [
   { value: 5, label: "指定人员" },
@@ -209,6 +210,10 @@ export const PREV_NODE_APPOINTED_VIRTUAL_USER_ID = "-4"; //AFSpecialAssigneeEnum
 export const PREV_NODE_APPOINTED_VIRTUAL_USER_NAME = "上一节点指定审批人";
 export const LABEL_PREV_NODE_APPOINTED = "af_syslabel_prev_node_appointed";
 export const LABEL_APPOINT_NEXT_NODE_APPROVER = "af_syslabel_appoint_next_node_approver";
+
+/**"根据标签选择"审批人规则相关常量(nodeProperty=20)*/
+export const LABEL_BASED_SET_TYPE = 20; //radio显示值,直接对应后端 nodeProperty=20,无需转换
+export const LABEL_BASED_MAX_CUSTOM_VARS = 5; //自定义变量组上限
 /**
  * 流程设计审批按钮显示
  */

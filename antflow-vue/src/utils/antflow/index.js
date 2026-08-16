@@ -120,6 +120,10 @@ All.prototype = {
         (item) => item.value == nodeConfig.property?.formAssigneeProperty,
       );
       return "" + info?.label;
+    } else if (nodeConfig.setType == 20) {
+      const rule = nodeConfig.property?.labelBasedApproverRule;
+      const labelName = rule?.labelName || rule?.labelKey || "";
+      return labelName ? "根据标签选择:" + labelName : "根据标签选择";
     } else {
       return "";
     }

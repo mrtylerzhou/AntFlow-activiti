@@ -1,15 +1,19 @@
 package org.openoa.base.service;
 
 import com.google.common.collect.Lists;
+import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.mapper.RoleMapper;
 import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.base.vo.LabelBasedApproverRuleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -142,5 +146,20 @@ public class UserServiceImpl implements AfUserService{
     @Override
     public List<BaseIdTranStruVo> getUserDepartmentsById(String userId) {
         return userMapper.queryDepartmentByUserId(userId);
+    }
+
+    /**
+     * "根据标签选择"审批人规则找人接口默认实现
+     * 默认返回空集合,表示无审批人,由节点"审批人为空时"策略(跳过/转管理员/报错)处理
+     *
+     * 用户应在下面改写此方法,实现真实的找人逻辑:
+     * 1. 从 ruleConfig.getLabelKey() 获取用户选择的流程标签
+     * 2. 从 ruleConfig.getCustomVars() 获取自定义变量组,转换为 Map<String,String>
+     * 3. 结合 businessDataVo(表单数据、发起人等)按业务规则查询审批人
+     * 4. 返回 List<BaseIdTranStruVo>(id+name)
+     */
+    @Override
+    public List<BaseIdTranStruVo> queryApproversByLabel(BusinessDataVo businessDataVo, LabelBasedApproverRuleVo ruleConfig) {
+        return Lists.newArrayList(BaseIdTranStruVo.builder().id(AFSpecialAssigneeEnum.TO_BE_IMPLEMENTED.getId()).name(AFSpecialAssigneeEnum.TO_BE_IMPLEMENTED.getDesc()).build());
     }
 }

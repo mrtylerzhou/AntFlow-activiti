@@ -12,7 +12,8 @@ public enum AFSpecialAssigneeEnum implements AfEnumBase{
     CC_NODE(-1,"-1","抄送人"),
     SKIP(-2,"-2","自动节点自动跳过"),
     AUTO_NODE_SKIP(-3,"-3","自动节点自动跳过"),
-    PREV_NODE_APPOINTED(-4,"-4","上一节点指定的审批人")
+    PREV_NODE_APPOINTED(-4,"-4","上一节点指定的审批人"),
+    TO_BE_IMPLEMENTED(-5,"-5","待实现"),
     ;
     private final Integer code;
     private final String id;
