@@ -18,6 +18,11 @@
                         v-model:nodeApproveList="originalConfigData.nodeApproveList">
                         <template #tip>当满足以下条件时，自动节点将执行自定义动作</template>
                     </ConditionGroupEditor>
+                    <div class="setting-group">
+                        <p class="setting-group-title">抗去重</p>
+                        <el-switch :model-value="true" disabled active-text="该节点不参与审批人去重" />
+                        <p class="tip">自动节点天然不参与审批人去重</p>
+                    </div>
                     <div class="demo-drawer__footer clear">
                         <el-button type="primary" @click="saveAutoNode">确 定</el-button>
                         <el-button @click="closeDrawer">取 消</el-button>

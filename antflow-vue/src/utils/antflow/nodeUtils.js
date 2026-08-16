@@ -30,6 +30,7 @@ export class NodeUtils {
       nodeId: this.idGenerator(),
       nodeName: "审核人",
       nodeDisplayName: "审核人",
+      deduplicationExclude: false, //抗去重: 默认不勾选, 勾选后该节点不参与审批人去重
       nodeType: 4, //节点类型 4、审批人
       nodeFrom: "",
       nodeTo: [],
@@ -139,6 +140,7 @@ export class NodeUtils {
     confirmNode.nodeDisplayName = "发起人确认";
     confirmNode.setType = 12; // 发起人自己
     confirmNode.error = false;
+    confirmNode.deduplicationExclude = true; //抗去重: 发起人确认节点天然不参与去重
 
     // 第一个节点：办理人，审批页面仅"同意"按钮
     let processNode = this.createApproveNode(confirmNode);
@@ -165,6 +167,7 @@ export class NodeUtils {
     confirmNode.nodeDisplayName = "发起人确认";
     confirmNode.setType = 12; // 发起人自己
     confirmNode.error = false;
+    confirmNode.deduplicationExclude = true; //抗去重: 发起人确认节点天然不参与去重
 
     // 第一个节点：自动节点
     let autoProcessNode = this.createAutoNode(confirmNode);
@@ -180,6 +183,7 @@ export class NodeUtils {
       nodeId: this.idGenerator(),
       nodeName: "自动节点",
       nodeDisplayName: "自动节点",
+      deduplicationExclude: true, //抗去重: 自动节点天然不参与去重
       nodeType: 9, //节点类型 9、自动节点
       nodeFrom: "",
       nodeTo: [],
@@ -226,6 +230,7 @@ export class NodeUtils {
       nodeId: this.idGenerator(),
       nodeName: "条件审批",
       nodeDisplayName: "条件审批",
+      deduplicationExclude: true, //抗去重: 条件审批节点天然不参与去重
       nodeType: 12, //节点类型 12、条件审批节点
       nodeFrom: "",
       nodeTo: [],
@@ -270,6 +275,7 @@ export class NodeUtils {
       nodeId: this.idGenerator(),
       nodeName: "条件抄送",
       nodeDisplayName: "条件抄送",
+      deduplicationExclude: true, //抗去重: 条件抄送节点天然不参与去重
       nodeType: 13, //节点类型 13、条件抄送节点
       nodeFrom: "",
       nodeTo: [],

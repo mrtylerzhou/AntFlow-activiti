@@ -272,6 +272,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     BpmnNode updateNode = new BpmnNode();
                     updateNode.setId(bpmnNodeId);
                     updateNode.setNodeConfigJson(nodeConfigJsonStr);
+                    //抗去重: 落 t_bpmn_node.deduplicationExclude 列, 运行时 BeanUtils 自动拷贝到 BpmnNodeVo
+                    updateNode.setDeduplicationExclude(bpmnNodeVo.isDeduplicationExclude());
                     bpmnNodeService.updateById(updateNode);
                 }
                 continue;
@@ -296,6 +298,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 BpmnNode updateNode = new BpmnNode();
                 updateNode.setId(bpmnNodeId);
                 updateNode.setNodeConfigJson(nodeConfigJsonStr);
+                //抗去重: 落 t_bpmn_node.deduplicationExclude 列, 运行时 BeanUtils 自动拷贝到 BpmnNodeVo
+                updateNode.setDeduplicationExclude(bpmnNodeVo.isDeduplicationExclude());
                 bpmnNodeService.updateById(updateNode);
             }
             if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())&&CollectionUtils.isEmpty(bpmnNodeVo.getNodeTo())){
@@ -1900,6 +1904,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnNodeVo.setDeduplicationExclude(true);
                 bpmnNodeVo.setIsAutomaticNode(true);
             }
+            if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.conditionApproveNode.getLabelValue())){
+                bpmnNodeVo.setDeduplicationExclude(true);
+                bpmnNodeVo.setIsConditionApproveNode(true);
+            }
+            if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.conditionCopyNode.getLabelValue())){
+                bpmnNodeVo.setDeduplicationExclude(true);
+                bpmnNodeVo.setIsConditionCopyNode(true);
+            }
             bpmnNodeVo.setLabelList(labelVOList);
 
         }
@@ -2068,6 +2080,18 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             if (NodeUtil.nodeLabelContainsAny(labelVOList, NodeLabelConstants.copyNodeV2.getLabelValue())) {
                 bpmnNodeVo.setDeduplicationExclude(true);
                 bpmnNodeVo.setIsCarbonCopyNode(true);
+            }
+            if (NodeUtil.nodeLabelContainsAny(labelVOList, NodeLabelConstants.automaticNode.getLabelValue())) {
+                bpmnNodeVo.setDeduplicationExclude(true);
+                bpmnNodeVo.setIsAutomaticNode(true);
+            }
+            if (NodeUtil.nodeLabelContainsAny(labelVOList, NodeLabelConstants.conditionApproveNode.getLabelValue())) {
+                bpmnNodeVo.setDeduplicationExclude(true);
+                bpmnNodeVo.setIsConditionApproveNode(true);
+            }
+            if (NodeUtil.nodeLabelContainsAny(labelVOList, NodeLabelConstants.conditionCopyNode.getLabelValue())) {
+                bpmnNodeVo.setDeduplicationExclude(true);
+                bpmnNodeVo.setIsConditionCopyNode(true);
             }
             if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.prevNodeAppointed.getLabelValue())){
                 bpmnNodeVo.setIsPrevNodeAppointed(true);
