@@ -179,6 +179,27 @@ export function getBpmVerifyInfoVos(param) {
 }
 
 /**
+ * 流程诊断: 初始化 (processNumber → confId/bpmnCode/发起人/当前表单值)
+ * @param {*} processNumber
+ * @returns
+ */
+export function getDiagnosisInit(processNumber) {
+  return http.get(
+    `${baseUrl}/bpmnConf/diagnosisInit?processNumber=${processNumber}`,
+    { headers },
+  );
+}
+
+/**
+ * 流程诊断: 节点归因诊断
+ * @param {*} data { processNumber, nodeId, expectedPresent }
+ * @returns
+ */
+export function diagnoseNode(data) {
+  return http.post(`${baseUrl}/bpmnConf/diagnoseNode`, data, { headers });
+}
+
+/**
  * 流程预览
  * @param {*} data
  * @returns

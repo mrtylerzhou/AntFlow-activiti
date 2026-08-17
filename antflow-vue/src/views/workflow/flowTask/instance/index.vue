@@ -124,6 +124,11 @@
                                     <DataAnalysis />
                                  </el-icon>效能
                               </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowDiagnosis(scope.row)">
+                                 <el-icon>
+                                    <Search />
+                                 </el-icon>流程诊断
+                              </el-dropdown-item>
                            </el-dropdown-menu>
                         </template>
                      </el-dropdown>
@@ -136,6 +141,7 @@
       </div>
       <previewDrawer v-if="visible" />
       <efficiencyDrawer v-model:visible="efficiencyVisible" :processNumber="efficiencyProcessNumber" />
+      <diagnosisDialog v-model:visible="diagnosisVisible" :processNumber="diagnosisProcessNumber" />
       <selectUserDialog v-model:visible="forwardDialogVisible" :data="[]" @change="handleForwardUserSelected" />
    </div>
 </template>
@@ -145,6 +151,7 @@ import { getAllProcesslistPage, processOperation } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
 import efficiencyDrawer from "@/views/workflow/components/efficiencyDrawer.vue";
+import diagnosisDialog from "@/views/workflow/components/diagnosisDialog.vue";
 import selectUserDialog from "@/components/Workflow/dialog/selectUserDialog.vue";
 import { onMounted } from "vue";
 const router = useRouter();
@@ -160,6 +167,8 @@ const forwardDialogVisible = ref(false);
 const currentForwardRow = ref(null);
 const efficiencyVisible = ref(false);
 const efficiencyProcessNumber = ref("");
+const diagnosisVisible = ref(false);
+const diagnosisProcessNumber = ref("");
 
 let visible = computed({
    get() {
@@ -361,6 +370,11 @@ function handleFlowForward(row) {
 function handleFlowEfficiency(row) {
    efficiencyProcessNumber.value = row.processNumber;
    efficiencyVisible.value = true;
+}
+
+function handleFlowDiagnosis(row) {
+   diagnosisProcessNumber.value = row.processNumber;
+   diagnosisVisible.value = true;
 }
 
 /** 转发选人确认回调 */

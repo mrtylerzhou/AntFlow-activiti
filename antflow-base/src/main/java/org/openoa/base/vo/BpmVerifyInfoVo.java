@@ -84,6 +84,12 @@ public class BpmVerifyInfoVo implements Serializable {
     private String elementId;
 
     /**
+     * bpmn node primary key id (same as t_bpmn_node.id, stored in af_hi_taskinst.node_id / af_ru_task.node_id)
+     * used by process diagnosis to align verify records with design-time flow graph nodes
+     */
+    private String nodeId;
+
+    /**
      *sort
      */
     private Integer sort;

@@ -266,6 +266,15 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
 
         bpmVerifyInfoVos.add(BpmVerifyInfoVo.builder().taskName("流程结束").verifyStatus(endVerifyStatus).build());
 
+        //process diagnosis support: DB-backed verify records should carry node id;
+        //virtual/predicted records (发起/流程结束/未来路径预测) have no id and are exempt
+        for (BpmVerifyInfoVo vo : bpmVerifyInfoVos) {
+            if (!StringUtils.isEmpty(vo.getId()) && StringUtils.isEmpty(vo.getNodeId())) {
+                log.error("verify record id={}, processNumber={}, taskName={} has no corresponding node_id in af_hi_taskinst/af_ru_task",
+                        vo.getId(), processNumber, vo.getTaskName());
+            }
+        }
+
         return bpmVerifyInfoVos;
     }
     /**

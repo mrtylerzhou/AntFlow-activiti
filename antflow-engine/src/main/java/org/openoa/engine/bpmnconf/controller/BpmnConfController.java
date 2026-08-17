@@ -6,6 +6,7 @@ import org.openoa.base.entity.Result;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.ProcessDiagnosisBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeToServiceImpl;
 import org.openoa.base.dto.PageDto;
@@ -41,6 +42,8 @@ public class BpmnConfController {
     private BpmnConfBizServiceImpl bpmnConfCommonService;
     @Autowired
     private BpmVerifyInfoBizServiceImpl bpmVerifyInfoBizService;
+    @Autowired
+    private ProcessDiagnosisBizServiceImpl processDiagnosisBizService;
     @Autowired(required = false)
     private Map<String, ActivitiService> activitiServices;
     @Autowired
@@ -123,6 +126,22 @@ public class BpmnConfController {
     @GetMapping("/getBpmVerifyInfoVos")
     public Result<List<BpmVerifyInfoVo>> getBpmVerifyInfoVos(@RequestParam("processNumber") String processNumber) {
         return Result.newSuccessResult(bpmVerifyInfoBizService.getBpmVerifyInfoVos(processNumber, false));
+    }
+
+    /**
+     * 流程诊断: 初始化 (processNumber → confId/bpmnCode/发起人/当前表单值)
+     */
+    @GetMapping("/diagnosisInit")
+    public Result<ProcessDiagnosisInitVo> diagnosisInit(@RequestParam("processNumber") String processNumber) {
+        return Result.newSuccessResult(processDiagnosisBizService.diagnosisInit(processNumber));
+    }
+
+    /**
+     * 流程诊断: 节点归因诊断 (短路矩阵见 .scratch/process-diagnosis-design.md)
+     */
+    @PostMapping("/diagnoseNode")
+    public Result<NodeDiagnosisVo> diagnoseNode(@RequestBody NodeDiagnosisRequestVo requestVo) {
+        return Result.newSuccessResult(processDiagnosisBizService.diagnoseNode(requestVo));
     }
 
     /**

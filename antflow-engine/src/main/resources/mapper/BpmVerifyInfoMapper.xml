@@ -47,8 +47,11 @@
         w.verify_date as verifyDate,
         w.verify_desc as verifyDesc,
         w.original_id originalId,
-        w.attachments_json as attachmentsJson
-        from bpm_verify_info w where 1=1
+        w.attachments_json as attachmentsJson,
+        h.NODE_ID_ as nodeId
+        from bpm_verify_info w
+        left join AF_HI_TASKINST h on h.ID_ = w.task_id
+        where 1=1
         <if test="processCode!=null and processCode!=''">
             and w.process_code=#{processCode}
         </if>
@@ -75,7 +78,8 @@
                '处理中'           AS verifyStatusName,
                null            AS verifyDate,
                ''              AS verifyDesc,
-               t.TASK_DEF_KEY_ AS elementId
+               t.TASK_DEF_KEY_ AS elementId,
+               t.NODE_ID_      AS nodeId
         from AF_RU_TASK t
         where t.PROC_INST_ID_=#{procInstId}
 

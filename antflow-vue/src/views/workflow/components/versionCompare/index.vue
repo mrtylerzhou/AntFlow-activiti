@@ -125,9 +125,9 @@
                 </div>
               </div>
               <div class="vc-node-layout">
-                <compareTree :tree="result.sourceTree" title="源版本" :versionText="versionText(sourceId)"
+                <flowTree :tree="result.sourceTree" title="源版本" :versionText="versionText(sourceId)"
                   :activeKey="activeKey" @select="onNodeSelect" />
-                <compareTree :tree="result.targetTree" title="目标版本" :versionText="versionText(targetId)"
+                <flowTree :tree="result.targetTree" title="目标版本" :versionText="versionText(targetId)"
                   :activeKey="activeKey" @select="onNodeSelect" />
                 <div class="vc-detail">
                   <template v-if="activeResult">
@@ -211,7 +211,7 @@ import { ref, watch, computed } from 'vue';
 import { Switch } from '@element-plus/icons-vue';
 import { getBpmnConflistPage, getApiWorkFlowData } from '@/api/workflow/index';
 import { compareConfs, nodeTitle, NODE_SECTIONS } from '@/utils/antflow/versionCompare';
-import compareTree from './compareTree.vue';
+import flowTree from '@/components/Workflow/FlowTree/flowTree.vue';
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
