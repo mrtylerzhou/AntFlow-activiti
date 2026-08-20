@@ -6,6 +6,7 @@ import org.openoa.base.entity.Result;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.ProcessCompareBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ProcessDiagnosisBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeToServiceImpl;
@@ -44,6 +45,8 @@ public class BpmnConfController {
     private BpmVerifyInfoBizServiceImpl bpmVerifyInfoBizService;
     @Autowired
     private ProcessDiagnosisBizServiceImpl processDiagnosisBizService;
+    @Autowired
+    private ProcessCompareBizServiceImpl processCompareBizService;
     @Autowired(required = false)
     private Map<String, ActivitiService> activitiServices;
     @Autowired
@@ -142,6 +145,26 @@ public class BpmnConfController {
     @PostMapping("/diagnoseNode")
     public Result<NodeDiagnosisVo> diagnoseNode(@RequestBody NodeDiagnosisRequestVo requestVo) {
         return Result.newSuccessResult(processDiagnosisBizService.diagnoseNode(requestVo));
+    }
+
+    /**
+     * 流程对比: 候选实例搜索 (同 formCode, 全状态, 排除已删除)
+     * 设计: .scratch/process-instance-compare-design.md §4.1
+     */
+    @GetMapping("/compareCandidates")
+    public Result<List<ProcessCompareCandidateVo>> compareCandidates(
+            @RequestParam("formCode") String formCode,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        return Result.newSuccessResult(processCompareBizService.compareCandidates(formCode, keyword));
+    }
+
+    /**
+     * 流程对比: 某实例全部加签/减签/转办记录 (bpm_flowrun_entrust, 自带 node_id)
+     * 设计: .scratch/process-instance-compare-design.md §4.2
+     */
+    @GetMapping("/compareEntrusts")
+    public Result<List<ProcessCompareEntrustVo>> compareEntrusts(@RequestParam("processNumber") String processNumber) {
+        return Result.newSuccessResult(processCompareBizService.compareEntrusts(processNumber));
     }
 
     /**

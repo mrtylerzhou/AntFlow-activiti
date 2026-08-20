@@ -200,6 +200,32 @@ export function diagnoseNode(data) {
 }
 
 /**
+ * 流程对比: 候选实例搜索 (同 formCode, 全状态, 排除已删除)
+ * @param {*} formCode
+ * @param {*} keyword 可选, 流程编号/发起人姓名模糊
+ * @returns
+ */
+export function getCompareCandidates(formCode, keyword) {
+  const kw = keyword ? `&keyword=${encodeURIComponent(keyword)}` : '';
+  return http.get(
+    `${baseUrl}/bpmnConf/compareCandidates?formCode=${encodeURIComponent(formCode)}${kw}`,
+    { headers },
+  );
+}
+
+/**
+ * 流程对比: 某实例全部加签/减签/转办记录
+ * @param {*} processNumber
+ * @returns
+ */
+export function getCompareEntrusts(processNumber) {
+  return http.get(
+    `${baseUrl}/bpmnConf/compareEntrusts?processNumber=${processNumber}`,
+    { headers },
+  );
+}
+
+/**
  * 流程预览
  * @param {*} data
  * @returns

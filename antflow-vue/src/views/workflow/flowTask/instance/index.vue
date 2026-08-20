@@ -129,6 +129,11 @@
                                     <Search />
                                  </el-icon>流程诊断
                               </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowCompare(scope.row)">
+                                 <el-icon>
+                                    <Files />
+                                 </el-icon>流程对比
+                              </el-dropdown-item>
                            </el-dropdown-menu>
                         </template>
                      </el-dropdown>
@@ -142,6 +147,7 @@
       <previewDrawer v-if="visible" />
       <efficiencyDrawer v-model:visible="efficiencyVisible" :processNumber="efficiencyProcessNumber" />
       <diagnosisDialog v-model:visible="diagnosisVisible" :processNumber="diagnosisProcessNumber" />
+      <processCompareDialog v-model:visible="compareVisible" :row="compareRow" />
       <selectUserDialog v-model:visible="forwardDialogVisible" :data="[]" @change="handleForwardUserSelected" />
    </div>
 </template>
@@ -152,6 +158,7 @@ import { useStore } from '@/store/modules/workflow';
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
 import efficiencyDrawer from "@/views/workflow/components/efficiencyDrawer.vue";
 import diagnosisDialog from "@/views/workflow/components/diagnosisDialog.vue";
+import processCompareDialog from "@/views/workflow/components/processCompareDialog.vue";
 import selectUserDialog from "@/components/Workflow/dialog/selectUserDialog.vue";
 import { onMounted } from "vue";
 const router = useRouter();
@@ -169,6 +176,8 @@ const efficiencyVisible = ref(false);
 const efficiencyProcessNumber = ref("");
 const diagnosisVisible = ref(false);
 const diagnosisProcessNumber = ref("");
+const compareVisible = ref(false);
+const compareRow = ref(null);
 
 let visible = computed({
    get() {
@@ -375,6 +384,16 @@ function handleFlowEfficiency(row) {
 function handleFlowDiagnosis(row) {
    diagnosisProcessNumber.value = row.processNumber;
    diagnosisVisible.value = true;
+}
+
+/** 流程对比(实例级, 仅限同 formCode) */
+function handleFlowCompare(row) {
+   if (!row.processKey) {
+      proxy.$modal.msgError("该实例缺少 formCode, 无法发起对比");
+      return;
+   }
+   compareRow.value = row;
+   compareVisible.value = true;
 }
 
 /** 转发选人确认回调 */
