@@ -283,6 +283,18 @@
             "noCache": false,
             "link": null
           }
+        },
+        {
+          "name": "dictData",
+          "path": "dictData",
+          "hidden": false,
+          "component": "workflow/flowDevOps/dictData/index",
+          "meta": {
+            "title": "字典管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
         }
       ]
     },

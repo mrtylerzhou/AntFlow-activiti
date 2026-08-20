@@ -3,10 +3,10 @@ package org.openoa.engine.bpmnconf.service.biz;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
 import org.openoa.base.entity.BpmProcessPermissions;
-import org.openoa.base.entity.Department;
 import org.openoa.base.mapper.RoleMapper;
 import org.openoa.base.service.AfDepartmentService;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +33,8 @@ public class BpmProcessPermissionsBizServiceImpl implements BpmProcessPermission
         permissionsWrapper.eq("object_id", userId);
         List<BpmProcessPermissions> list = getMapper().selectList(permissionsWrapper);
         //根据员工获取下级部门
-        List<Department> departmentVos = departmentService.ListSubDepartmentByEmployeeId(userId);
-        List<String> depList = departmentVos.stream().map(d -> String.valueOf(d.getId())).collect(Collectors.toList());
+        List<BaseIdTranStruVo> departmentVos = departmentService.ListSubDepartmentByEmployeeId(userId);
+        List<String> depList = departmentVos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(depList)) {
             QueryWrapper<BpmProcessPermissions> wrapper = new QueryWrapper<>();
             wrapper.eq("permissions_type", type);

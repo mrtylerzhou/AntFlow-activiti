@@ -3,6 +3,8 @@ package org.openoa.base.service;
 import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.UserAvailableVo;
+import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.base.vo.LabelBasedApproverRuleVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -55,4 +57,17 @@ public interface AfUserService {
      * @param userId 用户 id
      */
     List<BaseIdTranStruVo> getUserDepartmentsById(String userId);
+
+    /**
+     * "根据标签选择"审批人规则找人接口(nodeProperty=20)
+     * 在流程发起时由 LabelBasedPersonnelProvider 调用,根据标签和自定义变量从业务数据中解析审批人
+     *
+     * 默认实现返回空集合(表示无审批人,由节点"审批人为空时"策略处理)
+     * 用户应在 AfUserServiceImpl 中改写此方法,实现真实的找人逻辑
+     *
+     * @param businessDataVo 流程运行时业务数据(含表单数据、发起人、被审批人等)
+     * @param ruleConfig     根据标签选择规则配置(标签名、标签key、自定义变量组)
+     * @return 审批人集合(id+name);空集合表示无人,由调用方按"审批人为空时"策略处理
+     */
+    List<BaseIdTranStruVo> queryApproversByLabel(BusinessDataVo businessDataVo, LabelBasedApproverRuleVo ruleConfig);
 }

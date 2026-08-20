@@ -6,7 +6,7 @@
                     <el-radio v-for="({ value, label }) in visibleSetTypes" :value="value">{{ label }}</el-radio>
                 </el-radio-group>
             </div>
-            <div v-show="node.setType == 5 && displaySetType != 19 && displaySetType != 20">
+            <div v-show="node.setType == 5 && displaySetType != 19 && displaySetType != 21">
                 <el-button type="primary" plain icon="Plus" @click="addApprover">添加/修改人员</el-button>
                 <div class="gap-2">
                     <el-tag v-for="(item, index) in node.nodeApproveList" :key="item.targetId"
@@ -19,7 +19,7 @@
             <div v-if="displaySetType == 19" class="approver_text">
                 <p class="tip">该节点设置"上一节点指定"后，审批人由上一节点审批人在审批时通过[指定下一节点审批人]按钮指定。</p>
             </div>
-            <div v-if="displaySetType == 20" class="approver_text">
+            <div v-if="displaySetType == 21" class="approver_text">
                 <p class="tip">该节点设置"到达前设置"后，审批人在流程运行到该节点时由业务代码(FormOperationAdaptor.provideCurrentNodeAssignees)动态查询指定。</p>
             </div>
 
@@ -136,6 +136,41 @@
                     </el-select>
                 </div>
             </div>
+            <div class="approver_text" v-if="node.setType == 20">
+                <div style="margin-bottom: 12px;">
+                    <p><i style="color: red;">*</i>选择标签:</p>
+                    <el-select v-model="labelBasedSelectedLabelKey" filterable clearable
+                        placeholder="请选择流程标签" style="width: 100%"
+                        @change="onLabelBasedLabelChange">
+                        <el-option v-for="item in labelOptions" :key="item.id" :label="item.name"
+                            :value="item.id" />
+                    </el-select>
+                    <p class="tip">发起时透传给 AfUserService 里的queryApproversByLabel方法找人</p>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <p>自定义变量(可选,最多{{ LABEL_BASED_MAX_CUSTOM_VARS }}组):</p>
+                        <el-button type="primary" plain icon="Plus" size="small"
+                            :disabled="(node.property?.labelBasedApproverRule?.customVars?.length || 0) >= LABEL_BASED_MAX_CUSTOM_VARS"
+                            @click="addLabelBasedCustomVar">添加变量</el-button>
+                    </div>
+                    <div v-for="(group, idx) in labelBasedCustomVars" :key="idx"
+                        style="border: 1px solid #ebeef5; padding: 10px; margin-bottom: 8px; border-radius: 4px;">
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <el-input v-model="group.displayName" placeholder="显示标签(可选)"
+                                style="flex: 1;" />
+                            <el-input v-model="group.varName" placeholder="变量名(必填,不可重复)"
+                                style="flex: 1;" />
+                            <el-input v-model="group.varValue" placeholder="变量值(必填)"
+                                style="flex: 1;" />
+                            <el-button type="danger" plain icon="Delete" size="small"
+                                @click="removeLabelBasedCustomVar(idx)">删除</el-button>
+                        </div>
+                    </div>
+                    <p class="tip">每组包含显示标签(可选)、变量名(Map key,必填不重复)、变量值(Map value,必填非空)</p>
+                </div>
+                <p class="tip">"根据标签选择"规则不支持仲裁签,默认会签</p>
+            </div>
         </div>
         <div class="approver_block" v-if="node.nodeType == 4">
             <p>额外增加审批</p>
@@ -176,7 +211,7 @@
                 <br />
                 <el-radio :value="3" v-if="node.setType == 5">顺序会签（需要所有审批人同意，根据前端传入的顺序）</el-radio>
                 <br />
-                <el-radio :value="4">仲裁签(按通过比例完成)</el-radio>
+                <el-radio :value="4" :disabled="node.setType == 20">仲裁签(按通过比例完成)</el-radio>
             </el-radio-group>
             <div v-if="node.signType == 4" style="margin-top: 10px;">
                 <span>通过比例:</span>
@@ -206,9 +241,9 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, NO_USER_FIELD_WIDGETS, formUserOptionSet, formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME, ARRIVAL_DYNAMIC_SET_TYPE, ARRIVAL_DYNAMIC_VIRTUAL_USER_ID, ARRIVAL_DYNAMIC_VIRTUAL_USER_NAME } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, NO_USER_FIELD_WIDGETS, formUserOptionSet, formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME, ARRIVAL_DYNAMIC_SET_TYPE, ARRIVAL_DYNAMIC_VIRTUAL_USER_ID, ARRIVAL_DYNAMIC_VIRTUAL_USER_NAME, LABEL_BASED_SET_TYPE, LABEL_BASED_MAX_CUSTOM_VARS } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
-import { getUDROptions } from '@/api/workflow/index';
+import { getUDROptions, getDictDataByType } from '@/api/workflow/index';
 import selectUserDialog from '../../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../../dialog/selectRoleDialog.vue';
 
@@ -259,6 +294,12 @@ let udrSelectedId = ref(null);
 let formInfoSelected = ref(null);
 let formInfoOptions = ref([]);
 
+// 根据标签选择 (setType == 20) 状态
+let labelOptions = ref([]);
+let labelBasedSelectedLabelKey = ref(null);
+//直接读 node 嵌套数组,避免独立 ref 与 node 双向同步导致 watch 递归
+const labelBasedCustomVars = computed(() => node.value?.property?.labelBasedApproverRule?.customVars || []);
+
 // 额外增加/排除审批人相关状态
 let extraUserVisible = ref(false);
 let extraRoleVisible = ref(false);
@@ -282,7 +323,7 @@ const additionalSignInfoExcludeList = computed(() => {
 });
 
 /**
- * 审批人类型 radio 显示值映射: "上一节点指定"(19) 与 "到达前设置"(20) 均映射到 setType=5 + 虚拟用户。
+ * 审批人类型 radio 显示值映射: "上一节点指定"(19) 与 "到达前设置"(21) 均映射到 setType=5 + 虚拟用户。
  * 到达前设置的反显靠 nodeApproveList 含虚拟人 -5 检测(持久化数据, 可靠),
  * 不依赖标志位(标志位在 save→load 往返中可能丢失)。
  */
@@ -362,6 +403,10 @@ watch(() => props.approverConfig, (val) => {
         } else {
             loopEndPersonList.value = [];
         }
+    }
+    if (val.setType == LABEL_BASED_SET_TYPE) {//setType == 20 指 根据标签选择
+        labelBasedSelectedLabelKey.value = val.property?.labelBasedApproverRule?.labelKey || null;
+        initLabelOptions();
     }
 }, { immediate: true });
 
@@ -459,6 +504,28 @@ const changeType = (val) => {
     else {
         formInfoOptions.value = [];
     }
+    if (val == LABEL_BASED_SET_TYPE) {
+        //根据标签选择: 默认会签, 初始化 labelBasedApproverRule, 加载流程标签选项
+        node.value.signType = 2;
+        if (!node.value.property) {
+            node.value.property = {};
+        }
+        if (!node.value.property.labelBasedApproverRule) {
+            node.value.property.labelBasedApproverRule = {
+                labelName: '',
+                labelKey: '',
+                customVars: []
+            };
+        }
+        labelBasedSelectedLabelKey.value = node.value.property.labelBasedApproverRule.labelKey || null;
+        initLabelOptions();
+    } else {
+        // 切换离开根据标签选择: 清空配置(由 formatcommit_data 按 setType 决定是否提交)
+        if (node.value.property) {
+            node.value.property.labelBasedApproverRule = null;
+        }
+        labelBasedSelectedLabelKey.value = null;
+    }
 }
 
 const initFormInfoOptions = () => {
@@ -510,6 +577,59 @@ const initUdrOptions = async () => {
         udrOptions.value = res.data || [];
     } catch (error) {
         proxy.$modal.msgError("获取自定义审批规则失败");
+    }
+}
+
+const initLabelOptions = async () => {
+    if (labelOptions.value.length > 0) {
+        return;
+    }
+    try {
+        const res = await getDictDataByType('processlabel');
+        labelOptions.value = res.data || [];
+    } catch (error) {
+        proxy.$modal.msgError("获取流程标签失败");
+    }
+}
+
+// ========== 根据标签选择: 标签与变量组操作 ==========
+/**标签下拉变更: 同步 labelName/labelKey 到 node.property.labelBasedApproverRule */
+const onLabelBasedLabelChange = (val) => {
+    if (!node.value.property) {
+        node.value.property = {};
+    }
+    if (!node.value.property.labelBasedApproverRule) {
+        node.value.property.labelBasedApproverRule = { labelName: '', labelKey: '', customVars: [] };
+    }
+    const opt = labelOptions.value.find(item => item.id === val);
+    node.value.property.labelBasedApproverRule.labelKey = val || '';
+    node.value.property.labelBasedApproverRule.labelName = opt ? opt.name : '';
+}
+
+/**添加自定义变量组(上限 LABEL_BASED_MAX_CUSTOM_VARS) */
+const addLabelBasedCustomVar = () => {
+    if (!node.value.property) {
+        node.value.property = {};
+    }
+    if (!node.value.property.labelBasedApproverRule) {
+        node.value.property.labelBasedApproverRule = { labelName: '', labelKey: '', customVars: [] };
+    }
+    const rule = node.value.property.labelBasedApproverRule;
+    if (!rule.customVars) {
+        rule.customVars = [];
+    }
+    if (rule.customVars.length >= LABEL_BASED_MAX_CUSTOM_VARS) {
+        proxy.$modal.msgError(`自定义变量组不能超过${LABEL_BASED_MAX_CUSTOM_VARS}组`);
+        return;
+    }
+    rule.customVars.push({ displayName: '', varName: '', varValue: '' });
+}
+
+/**移除自定义变量组 */
+const removeLabelBasedCustomVar = (idx) => {
+    const rule = node.value.property?.labelBasedApproverRule;
+    if (rule && rule.customVars) {
+        rule.customVars.splice(idx, 1);
     }
 }
 

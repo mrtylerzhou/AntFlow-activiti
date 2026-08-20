@@ -169,6 +169,11 @@ public class BpmnNodePropertysVo implements Serializable{
     //用户在UDRPersonnelProvider类里自动取出自定义属性json然后自己转换为合适类型
     private String udrValueJson;
     private BaseIdTranStruVo udrAssigneeProperty;
+    /**
+     * "根据标签选择"审批人规则配置(nodeProperty=20)
+     * 包含标签名/标签key + 自定义变量组(最多5组),发起时透传给 AfUserService.queryApproversByLabel
+     */
+    private LabelBasedApproverRuleVo labelBasedApproverRule;
     private String ext1;
     private String ext2;
     private String ext3;

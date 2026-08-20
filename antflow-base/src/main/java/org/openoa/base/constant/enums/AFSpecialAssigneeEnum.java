@@ -13,7 +13,8 @@ public enum AFSpecialAssigneeEnum implements AfEnumBase{
     SKIP(-2,"-2","自动节点自动跳过"),
     AUTO_NODE_SKIP(-3,"-3","自动节点自动跳过"),
     PREV_NODE_APPOINTED(-4,"-4","上一节点指定的审批人"),
-    ARRIVAL_DYNAMIC_ASSIGNEE(-5,"-5","到达前动态查询审批人")
+    ARRIVAL_DYNAMIC_ASSIGNEE(-5,"-5","到达前动态查询审批人"),
+    TO_BE_IMPLEMENTED(-99,"-5","待实现"),
     ;
     private final Integer code;
     private final String id;

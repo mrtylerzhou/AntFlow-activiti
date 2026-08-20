@@ -133,7 +133,8 @@ export let setTypes = [
   { value: 17, label: "自定义" },
   { value: 18, label: "上一节点审批人的" },
   { value: 19, label: "上一节点指定" },
-  { value: 20, label: "到达前设置" },
+  { value: 20, label: "根据标签选择" },
+  { value: 21, label: "到达前设置" },
 ];
 export let setCopyerTypes = [
   { value: 5, label: "指定人员" },
@@ -277,10 +278,14 @@ export const LABEL_PREV_NODE_APPOINTED = "af_syslabel_prev_node_appointed";
 export const LABEL_APPOINT_NEXT_NODE_APPROVER = "af_syslabel_appoint_next_node_approver";
 export const LABEL_PICK_CONDITION = "af_syslabel_pick_condition";
 
-/**到达前设置(动态审批人):前端使用的常量。运行期触发为 assignee==-5, 无需节点标签。*/
-export const ARRIVAL_DYNAMIC_SET_TYPE = 20; //radio显示值(映射到 setType=5)
+/**到达前设置(动态审批人):前端使用的常量。运行期触发为 assignee==-5, 无需节点标签。radio显示值21(避免与根据标签选择20冲突),持久化时映射到 setType=5。*/
+export const ARRIVAL_DYNAMIC_SET_TYPE = 21; //radio显示值(映射到 setType=5)
 export const ARRIVAL_DYNAMIC_VIRTUAL_USER_ID = "-5"; //AFSpecialAssigneeEnum.ARRIVAL_DYNAMIC_ASSIGNEE
 export const ARRIVAL_DYNAMIC_VIRTUAL_USER_NAME = "到达前动态查询审批人";
+
+/**"根据标签选择"审批人规则相关常量(nodeProperty=20)*/
+export const LABEL_BASED_SET_TYPE = 20; //radio显示值,直接对应后端 nodeProperty=20,无需转换
+export const LABEL_BASED_MAX_CUSTOM_VARS = 5; //自定义变量组上限
 /**
  * 流程设计审批按钮显示
  */

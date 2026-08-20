@@ -9,6 +9,7 @@ import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.ConfigFlowButtonSortEnum;
 import org.openoa.base.constant.enums.ProcessButtonEnum;
+import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.dto.NodeXelementXvarXverifyInfo;
 import org.openoa.base.entity.*;
 import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
@@ -160,6 +161,14 @@ public class ConfigFlowButtonContans {
                 auditButtons.clear();
                 auditButtons.add(undertake);
             }
+
+            //if the process's running task has already gone back to the starter node(e.g. after a draw back),
+            //hide the draw back button on the view page to avoid repeated draw back causing errors
+            if (isTaskAlreadyBackToStarter(bpmBusinessProcess)) {
+                toViewButtons = toViewButtons.stream()
+                        .filter(b -> !ButtonTypeEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode().equals(b.getButtonType()))
+                        .collect(Collectors.toList());
+            }
         } else if (bpmBusinessProcess.getProcessState() == ProcessStateEnum.HANDLED_STATE.getCode()
                 //|| bpmBusinessProcess.getProcessState() == ProcessStateEnum.DISAGREE_STATE.getCode()
                 || bpmBusinessProcess.getProcessState() == ProcessStateEnum.REJECT_STATE.getCode()
@@ -210,6 +219,28 @@ public class ConfigFlowButtonContans {
 
         buttonMap.put(ButtonPageTypeEnum.TO_VIEW.getName(), buttonsSort(NodeUtil.repeatButtonFilter(toViewButtons)));
         return buttonMap;
+    }
+
+    /**
+     * 判断当前流程的运行任务是否已全部回到发起人节点(撤回后任务会停留在发起人节点)。
+     * 此时查看页不应再展示撤回按钮,避免重复点击撤回导致报错
+     *
+     * @param bpmBusinessProcess the business process
+     * @return true if all running tasks are on the starter node
+     */
+    private boolean isTaskAlreadyBackToStarter(BpmBusinessProcess bpmBusinessProcess) {
+        String procInstId = Optional.ofNullable(bpmBusinessProcess)
+                .map(BpmBusinessProcess::getProcInstId)
+                .orElse(null);
+        if (StringUtils.isBlank(procInstId)) {
+            return false;
+        }
+        List<Task> runningTasks = taskService.createTaskQuery().processInstanceId(procInstId).list();
+        if (CollectionUtils.isEmpty(runningTasks)) {
+            return false;
+        }
+        return runningTasks.stream()
+                .anyMatch(t -> ProcessNodeEnum.START_TASK_KEY.getDesc().equals(t.getTaskDefinitionKey()));
     }
 
     private List<ProcessActionButtonVo> toViewButtons(List<ButtonItem> btnVarList, Boolean isInitiate) {

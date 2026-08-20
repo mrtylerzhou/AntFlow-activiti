@@ -82,7 +82,7 @@
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.isConditionAutoSignUpNode" lazy label="加批设置" name="autoSignUpStep">
                 <ApproverStepPanel :approver-config="autoSignUpConf" :director-max-level="directorMaxLevel"
-                    :exclude-set-types="[7, 18, 19, 20, 2, 16]" :hide-sign-type="true" :hide-no-header-action="true" />
+                    :exclude-set-types="[7, 18, 19, 20, 21, 2, 16]" :hide-sign-type="true" :hide-no-header-action="true" />
                 <div class="disagree-back-conf" style="margin-top: 12px;">
                     <p class="setting-group-title">多人审批方式（加批人审批时采用）</p>
                     <el-radio-group v-model="autoSignUpType">
@@ -224,7 +224,7 @@
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.isConditionAutoSignUpNode" lazy label="加批设置" name="autoSignUpStep">
                 <ApproverStepPanel :approver-config="autoSignUpConf" :director-max-level="directorMaxLevel"
-                    :exclude-set-types="[7, 18, 19, 20, 2, 16]" :hide-sign-type="true" :hide-no-header-action="true" />
+                    :exclude-set-types="[7, 18, 19, 20, 21, 2, 16]" :hide-sign-type="true" :hide-no-header-action="true" />
                 <div class="disagree-back-conf" style="margin-top: 12px;">
                     <p class="setting-group-title">多人审批方式（加批人审批时采用）</p>
                     <el-radio-group v-model="autoSignUpType">
@@ -290,6 +290,7 @@
 <script setup>
 import { ref, watch, computed, inject } from 'vue';
 import $func from '@/utils/antflow/index';
+import { LABEL_BASED_SET_TYPE, LABEL_BASED_MAX_CUSTOM_VARS } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
 import { useNodeForwardBack } from './useNodeForwardBack';
 import { validateAutoSignUpConf, buildAutoSignUpResolvedProperty } from '@/utils/antflow/autoSignUpConfUtils';
@@ -510,6 +511,36 @@ const saveApprover = () => {
         if (!r || r < 1 || r > 100) {
             proxy.$modal.msgError('请填写仲裁签通过比例(1-100)');
             return;
+        }
+    }
+    // 根据标签选择校验: 标签必填, 变量组 0-5 组, varName 不重复, varValue 非空
+    if (approverConfig.value.setType == LABEL_BASED_SET_TYPE) {
+        const rule = approverConfig.value.property?.labelBasedApproverRule;
+        if (!rule || !rule.labelKey) {
+            proxy.$modal.msgError('请选择流程标签');
+            return;
+        }
+        const vars = rule.customVars || [];
+        if (vars.length > LABEL_BASED_MAX_CUSTOM_VARS) {
+            proxy.$modal.msgError(`自定义变量组不能超过${LABEL_BASED_MAX_CUSTOM_VARS}组`);
+            return;
+        }
+        const nameSet = new Set();
+        for (let i = 0; i < vars.length; i++) {
+            const g = vars[i];
+            if (!g.varName) {
+                proxy.$modal.msgError(`第${i + 1}组自定义变量的变量名不能为空`);
+                return;
+            }
+            if (nameSet.has(g.varName)) {
+                proxy.$modal.msgError(`第${i + 1}组自定义变量的变量名重复:${g.varName}`);
+                return;
+            }
+            nameSet.add(g.varName);
+            if (!g.varValue) {
+                proxy.$modal.msgError(`第${i + 1}组自定义变量的变量值不能为空`);
+                return;
+            }
         }
     }
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
