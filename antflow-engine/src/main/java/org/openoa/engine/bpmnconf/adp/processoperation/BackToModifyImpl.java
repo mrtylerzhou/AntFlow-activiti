@@ -137,7 +137,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                     .filter(a -> a.getEndTime() != null&&!ProcessNodeEnum.START_TASK_KEY.getDesc().equals(a.getTaskDefinitionKey()))
                     .collect(Collectors.toList());
             if(!CollectionUtils.isEmpty(completedTasks)){
-                throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"已被审批的流程允许撤回!");
+                throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"已被审批的流程不允许撤回!");
             }
             vo.setBackToModifyType(ProcessDisagreeTypeEnum.TWO_DISAGREE.getCode());
         }else if(isOtherApproverDrawBack){
