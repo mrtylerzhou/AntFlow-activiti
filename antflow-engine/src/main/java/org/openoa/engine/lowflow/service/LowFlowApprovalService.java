@@ -183,11 +183,16 @@ public class LowFlowApprovalService extends AbstractFormOperationAdaptor<UDLFApp
                             actualValue=field.getFieldValueNumber();
                         }
                         break;
-                    case DATE_TIME:
-                       actualValue=DateUtil.SDF_DATETIME_PATTERN.format(field.getFieldValueDt());
-                        break;
                     case DATE:
-                        actualValue=DateUtil.SDF_DATE_PATTERN.format(field.getFieldValueDt());
+                    case DATE_TIME:
+                        if (field.getFieldValueDt()!=null){
+                            actualValue=fieldTypeEnum==LFFieldTypeEnum.DATE_TIME?DateUtil.SDF_DATETIME_PATTERN.format(field.getFieldValueDt()):DateUtil.SDF_DATE_PATTERN.format(field.getFieldValueDt());
+                        }else if(!StringUtils.isEmpty(field.getFieldValue())&&field.getFieldValue().startsWith("[")){
+                            //日期范围（daterange）字段按字符串存储，需反序列化为数组
+                            actualValue=JSON.parseArray(field.getFieldValue());
+                        }else{
+                            actualValue=field.getFieldValue();
+                        }
                         break;
                     case TEXT:
                        actualValue=field.getFieldValueText();
