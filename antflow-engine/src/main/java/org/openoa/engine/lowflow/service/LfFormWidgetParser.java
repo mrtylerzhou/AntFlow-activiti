@@ -63,14 +63,22 @@ public final class LfFormWidgetParser {
                 if (containerTypeEnum == null) {
                     continue;
                 }
-                if (VariantFormContainerTypeEnum.CARD.equals(containerTypeEnum)) {
-                    parseWidgetListRecursively(lfWidget.getWidgetList(), confId, formDataId, result);
+                // widgetList 结构: CARD / SUB_FORM / GRID_SUB_FORM / TABLE_SUB_FORM
+                if (VariantFormContainerTypeEnum.CARD.equals(containerTypeEnum)
+                        || VariantFormContainerTypeEnum.SUB_FORM.equals(containerTypeEnum)
+                        || VariantFormContainerTypeEnum.GRID_SUB_FORM.equals(containerTypeEnum)
+                        || VariantFormContainerTypeEnum.TABLE_SUB_FORM.equals(containerTypeEnum)) {
+                    List<FormConfigWrapper.LFWidget> subWidgetList = lfWidget.getWidgetList();
+                    if (!CollectionUtils.isEmpty(subWidgetList)) {
+                        parseWidgetListRecursively(subWidgetList, confId, formDataId, result);
+                    }
                 } else if (VariantFormContainerTypeEnum.TAB.equals(containerTypeEnum)) {
                     List<FormConfigWrapper.LFWidget> tabs = lfWidget.getTabs();
                     for (FormConfigWrapper.LFWidget tab : tabs) {
                         parseWidgetListRecursively(tab.getWidgetList(), confId, formDataId, result);
                     }
                 } else {
+                    // rows/cols 结构: TABLE / GRID
                     List<FormConfigWrapper.TableRow> rows = lfWidget.getRows();
                     if (!CollectionUtils.isEmpty(rows)) {
                         for (FormConfigWrapper.TableRow row : lfWidget.getRows()) {
@@ -85,12 +93,14 @@ public final class LfFormWidgetParser {
                         }
                     } else {
                         List<FormConfigWrapper.LFWidget> cols = lfWidget.getCols();
-                        for (FormConfigWrapper.LFWidget col : cols) {
-                            List<FormConfigWrapper.LFWidget> subWidgetList = col.getWidgetList();
-                            if (CollectionUtils.isEmpty(subWidgetList)) {
-                                continue;
+                        if (!CollectionUtils.isEmpty(cols)) {
+                            for (FormConfigWrapper.LFWidget col : cols) {
+                                List<FormConfigWrapper.LFWidget> subWidgetList = col.getWidgetList();
+                                if (CollectionUtils.isEmpty(subWidgetList)) {
+                                    continue;
+                                }
+                                parseWidgetListRecursively(subWidgetList, confId, formDataId, result);
                             }
-                            parseWidgetListRecursively(subWidgetList, confId, formDataId, result);
                         }
                     }
                 }
@@ -100,20 +110,40 @@ public final class LfFormWidgetParser {
 
     private static int getFieldTypeByTypeString(String typeString) {
         switch (typeString) {
+            // NUMBER
             case "number":
             case "slider":
                 return LFFieldTypeEnum.NUMBER.getType();
+            // DATE
             case "date":
                 return LFFieldTypeEnum.DATE.getType();
+            // DATE_TIME
             case "date-range":
             case "time":
             case "time-range":
                 return LFFieldTypeEnum.DATE_TIME.getType();
+            // BOOLEAN
             case "switch":
                 return LFFieldTypeEnum.BOOLEAN.getType();
+            // TEXT (long text)
             case "textarea":
             case "richtext-editor":
                 return LFFieldTypeEnum.TEXT.getType();
+            // STRING (short text) - default for most form fields
+            case "select":
+            case "radio":
+            case "checkbox":
+            case "cascader":
+            case "tree-select":
+            case "color-picker":
+            case "rate":
+            case "input":
+            case "number-range":
+            case "picture-upload":
+            case "file-upload":
+            case "icon-picker":
+            case "transfer":
+                return LFFieldTypeEnum.STRING.getType();
             default:
                 return LFFieldTypeEnum.STRING.getType();
         }
