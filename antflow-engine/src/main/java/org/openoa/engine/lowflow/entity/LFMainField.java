@@ -163,8 +163,13 @@ public class LFMainField implements TenantField, Serializable {
                 break;
             case DATE:
             case DATE_TIME:
-                Date fieldValueDt = !StringUtils.isEmpty(fieldValueStr) ? DateUtil.parseStandard(fieldValueStr) : null;
-                mainField.setFieldValueDt(fieldValueDt);
+                if (fieldValue instanceof Collection) {
+                    // 日期范围（daterange）字段，提交值为数组，如 ["2026-08-05","2026-09-08"]，按字符串存储
+                    mainField.setFieldValue(fieldValueStr);
+                } else {
+                    Date fieldValueDt = !StringUtils.isEmpty(fieldValueStr) ? DateUtil.parseStandard(fieldValueStr) : null;
+                    mainField.setFieldValueDt(fieldValueDt);
+                }
                 break;
             case TEXT:
                 mainField.setFieldValueText(fieldValueStr);

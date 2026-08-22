@@ -250,8 +250,9 @@ export class FormatDisplayUtils {
         //delete node.property;
       }
 
-      // 自动节点反显: nodeType=4 + automaticNode标签 → nodeType=9
-      if (node.nodeType == 4 && node.labelList && node.labelList.some(l => l.labelValue === "auto_node")) {
+      // 自动节点反显: 后端可能返回 nodeType=4(旧) 或 nodeType=9(新,已按auto_node标签转换)
+      // automaticNode标签存在即视为自动节点, 统一还原为 nodeType=9 并恢复条件数据
+      if ((node.nodeType == 4 || node.nodeType == 9) && node.labelList && node.labelList.some(l => l.labelValue === "auto_node")) {
         node.nodeType = 9;
         node.nodeName = node.nodeName || "自动节点";
         node.nodeDisplayName = node.nodeDisplayName || "自动节点";
