@@ -344,6 +344,86 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
 
 ---
 
+## 八、本次会话清理的实体与死代码（无新增表删除）
+
+第八批之前的迁移把 26 张 `t_bpmn_*` 配置子表合并进了 `node_config_json`，但 Java 侧的
+读路径仍保留了「有 JSON 走 JSON / 无 JSON 走关联表」的双分支。本批次把这条兜底路径连同
+它依赖的实体一起清除。
+
+### Phase 1: 移除 `allHaveJson` 双分支
+
+| 位置 | 变更 |
+|------|------|
+| `BpmnConfBizServiceImpl#getBpmnNodeVoList` | 移除 `allHaveJson` 判定、6 个 DB Map 变量与兜底分支，只保留 JSON 路径 |
+| `BpmnConfBizServiceImpl#getBpmnNodeVoFromJson` | 空 `nodeConfigJson` / 解析失败时改为 `throw AFBizException`，不再静默返回裸 VO |
+| `BpmnConfBizServiceImpl#getBpmnNodeVoList` | 移除三层未使用的 `conditionsUrl` 参数（同步改 `BpmnNodeBizServiceImpl` 调用点） |
+
+**行为对等价性说明：** 兜底分支里的 `getBpmnNodeButtonConfMap` / `getBpmnNodeSignUpConfMap` /
+`getBpmnNodeTemplateVoMap` / `getBpmnNodeLabelsVoMap` / `getBpmnNodeFieldControlConfMap` 早先已经改成
+`throw new AFBizException("migration error")`，因此「移除兜底 + 空 JSON 抛异常」与重构前行为等价，
+不构成回归。
+
+### Phase 2: 移除写路径残留
+
+| 位置 | 变更 |
+|------|------|
+| `BpmnConfBizServiceImpl#edit` | 移除 `bpmnApproveRemindService.editBpmnApproveRemind()` 调用及其注入 |
+| `BpmnNodeConfigHolder#setTemplateConf` | 补上 `isInuse` 语义：`isInuse != TRUE` 时不落 `templateConf.approveRemind` |
+
+**为什么可以删：** 运行时催办读的是 `t_bpm_variable.variable_config_json`，从不读
+`t_bpmn_approve_remind`——`BpmnInsertVariablesImpl` 在发布流程时把 `approveRemindVo` 序列化进变量 JSON，
+`BpmVariableApproveRemindBizServiceImpl` 在运行时反序列化。那次 INSERT 是纯死写。
+
+### Phase 3: 删除实体（5 个）
+
+| 实体 | 原表 |
+|------|------|
+| `BpmnNodeButtonConf` | `t_bpmn_node_button_conf` |
+| `BpmnNodeSignUpConf` | `t_bpmn_node_sign_up_conf` |
+| `BpmnNodeLabel` | `t_bpmn_node_labels` |
+| `BpmnNodeLfFormdataFieldControl` | `t_bpmn_node_lf_formdata_field_control` |
+| `BpmnApproveRemind` | `t_bpmn_approve_remind` |
+
+### Phase 4: 删除空壳 Service / Mapper（6 个）
+
+`BpmnNodeButtonConfService`、`BpmnNodeLfFormdataFieldControlMapper`、`BpmnApproveRemindMapper`、
+`BpmnApproveRemindService`、`BpmnApproveRemindServiceImpl`、`BpmNodeLabelsService`
+
+### Phase 5: 连带死代码
+
+| 位置 | 变更 | 备注 |
+|------|------|------|
+| `NodeLabelsPostProcessor#postProcess` | 删除收集后从未使用的 `List<BpmnNodeLabel> nodeLabels` | **顺带修复一个 bug**：该死代码调用 `SecurityUtils.getLogInEmpName()`（非 Safe 版），无登录 ThreadLocal 时会抛 `AFBizException("当前用户未登陆!")`，导致定时/回调场景下的保存被中断 |
+| `NodeUtil` | 删除 2 处死 import | `BpmnNodeLabel`、`BpmNodeLabelsService` |
+| `InformationTemplateBizServiceImpl` | 删除未调用的 `BpmnApproveRemindService` 注入 | |
+| `EntityRound20ATest` | 删除 `BpmnNodeLabel`、`BpmnNodeSignUpConf` 两个用例 | 实体删除后不删会编译失败 |
+
+### 明确保留（经核实仍有使用）
+
+`ButtonPageTypeEnum`（`ConfigFlowButtonContans` / `BpmnInsertVariablesImpl` / `ProcessApprovalServiceImpl` /
+`ViewBusinessProcessImpl`）、`BpmnApproveRemindVo`、`BpmnTemplateVo`、`LFFieldControlVO`、`BpmnNodeLabelVO`、
+`BpmnNodeButtonConfBaseVo`、`BpmnConfCommonButtonPropertyVo`
+
+### 脏数据校验 SQL
+
+空 JSON 现在会直接抛异常，老库升级后可用下面的 SQL 提前定位问题数据：
+
+```sql
+-- 找出尚未完成 JSON 化的节点
+SELECT n.id, n.conf_id, n.node_id, n.node_type, c.bpmn_name, c.form_code
+FROM t_bpmn_node n
+LEFT JOIN t_bpmn_conf c ON c.id = n.conf_id
+WHERE n.is_del = 0
+  AND (n.node_config_json IS NULL OR n.node_config_json = '');
+
+-- 流程级配置同理
+SELECT id, bpmn_name, form_code
+FROM t_bpmn_conf
+WHERE conf_config_json IS NULL OR conf_config_json = '';
+```
+
+---
+
 ## 保留的表
 
 | 表名 | 说明 | 新增字段 |
@@ -420,6 +500,12 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
 
 待删除: 1 张表（数据迁移后可删除）
   └── bpm_process_application_type
+
+第九批（JSON 化后的实体与死代码清理）: 0 张表
+  ├── BpmnConfBizServiceImpl 移除 allHaveJson 双分支（详见「八、本次会话清理的实体与死代码」）
+  ├── 移除 editBpmnApproveRemind 写路径残留，isInuse 语义并入 BpmnNodeConfigHolder
+  ├── 删除 5 个实体 + 6 个空壳 Service/Mapper
+  └── 连带清理 NodeLabelsPostProcessor 死代码（修复无登录上下文报错的 bug）
 ```
 
 ---

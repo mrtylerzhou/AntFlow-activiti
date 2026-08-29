@@ -41,7 +41,7 @@ public class BpmnNodeBizServiceImpl implements BpmnNodeBizService {
             throw  new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能找到流程节点信息!");
         }
         BpmnConfBizServiceImpl bpmnConfBizService = SpringBeanUtils.getBean(BpmnConfBizServiceImpl.class);
-        List<BpmnNodeVo> bpmnNodeVoList = bpmnConfBizService.getBpmnNodeVoList(Lists.newArrayList(bpmnNode), null);
+        List<BpmnNodeVo> bpmnNodeVoList = bpmnConfBizService.getBpmnNodeVoList(Lists.newArrayList(bpmnNode));
         return bpmnNodeVoList.get(0);
     }
 }

@@ -1,12 +1,10 @@
 package org.openoa.engine.bpmnconf.service.processor;
 
 import org.openoa.base.entity.BpmnNode;
-import org.openoa.base.entity.BpmnNodeLabel;
 import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.service.AntFlowOrderPostProcessor;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.BpmnNodeVo;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,21 +24,9 @@ public class NodeLabelsPostProcessor implements AntFlowOrderPostProcessor<BpmnCo
     @Override
     public void postProcess(BpmnConfVo confVo) {
         List<BpmnNodeVo> nodeVos = confVo.getNodes();
-        List<BpmnNodeLabel> nodeLabels=new ArrayList<>();
         for (BpmnNodeVo nodeVo : nodeVos) {
             List<BpmnNodeLabelVO> labelList = nodeVo.getLabelList();
             if (!CollectionUtils.isEmpty(labelList)){
-                List<BpmnNodeLabel> labels = labelList.stream().map(a -> {
-                    Long nodeId = nodeVo.getId();
-                    BpmnNodeLabel nodeLabel = new BpmnNodeLabel();
-                    nodeLabel.setNodeId(nodeId);
-                    nodeLabel.setLabelName(a.getLabelName());
-                    nodeLabel.setLabelValue(a.getLabelValue());
-                    nodeLabel.setCreateUser(SecurityUtils.getLogInEmpName());
-                    return nodeLabel;
-                }).collect(Collectors.toList());
-                nodeLabels.addAll(labels);
-
                 updateLabelsToNodeJson(nodeVo.getId(), labelList);
             }
         }

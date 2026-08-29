@@ -334,12 +334,18 @@ public class BpmnNodeConfigHolder {
                     .collect(Collectors.toList()));
         }
 
-        // Approve remind
+        // Approve remind. node_config_json is the single source of truth; the legacy
+        // t_bpmn_approve_remind table has been dropped, along with its write path.
+        // isInuse is honoured here: a remind that is not in use must not be persisted,
+        // otherwise disabling it in the designer would leave a stale entry behind.
         BpmnApproveRemindVo remind = vo.getApproveRemindVo();
-        if (remind != null) {
+        if (remind != null && Boolean.TRUE.equals(remind.getIsInuse())) {
+            String days = CollectionUtils.isEmpty(remind.getDayList())
+                    ? remind.getDays()
+                    : remind.getDayList().stream().map(String::valueOf).collect(Collectors.joining(","));
             tc.setApproveRemind(BpmnNodeTemplateConfJson.ApproveRemindConf.builder()
                     .templateId(remind.getTemplateId())
-                    .days(remind.getDays())
+                    .days(days)
                     .build());
         }
 

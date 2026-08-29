@@ -24,7 +24,6 @@ import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.BpmVariableService;
-import org.openoa.base.service.BpmNodeLabelsService;
 import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.*;
@@ -97,8 +96,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     @Autowired
     private InformationTemplateService informationTemplateService;
 
-    @Autowired
-    private BpmnApproveRemindService bpmnApproveRemindService;
     @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
     @Autowired
@@ -280,9 +277,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             }
 
 
-
-            //edit in node approver remind conf
-            bpmnApproveRemindService.editBpmnApproveRemind(bpmnNodeVo);
 
             //get node adaptor
             BpmnNodeAdaptor bpmnNodeAdaptor = nodeAdditionalInfoService.getBpmnNodeAdaptor(bpmnNodeAdpConfEnum);
@@ -1431,7 +1425,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         BpmnConfVo bpmnConfVo = new BpmnConfVo();
         BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
 
-        String conditionsUrl = "";
         if (bpmnConfVo.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess()==1) {
             //query and set business party's call url
             OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService
@@ -1464,7 +1457,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnConfVo.setSubmitUrl(applicationUrl.getSubmitUrl());//submit url
                 bpmnConfVo.setConditionsUrl(applicationUrl.getConditionUrl());//condition url
                 bpmnConfVo.setAppId(applicationUrl.getId());//关联应用Id
-                conditionsUrl = applicationUrl.getConditionUrl();
             }
         }
         ProcessorFactory.executePreReadProcessors(bpmnConfVo);
@@ -1483,7 +1475,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnNode.setConfExtraFlags(bpmnConf.getExtraFlags());
             }
         }
-        bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
+        bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes));
         if (!ObjectUtils.isEmpty(bpmnConfVo.getNodes())) {
             Map<String,BpmnNodeVo>id2NodeMap=null;
             for (BpmnNodeVo node : bpmnConfVo.getNodes()) {
@@ -1675,7 +1667,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param bpmnNodeList bpmnNodeList
      * @return List
      */
-    public List<BpmnNodeVo> getBpmnNodeVoList(List<BpmnNode> bpmnNodeList, String conditionsUrl) {
+    public List<BpmnNodeVo> getBpmnNodeVoList(List<BpmnNode> bpmnNodeList) {
 
 
         List<Long> idList = bpmnNodeList.stream().map(BpmnNode::getId).collect(Collectors.toList());
@@ -1683,45 +1675,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
         Map<Long, List<String>> bpmnNodeToMap = nodeAdditionalInfoService.getBpmnNodeToMap(idList);
 
-        // Check if ALL nodes have nodeConfigJson — if so, use JSON path exclusively
-        boolean allHaveJson = bpmnNodeList.stream()
-                .allMatch(n -> n.getNodeConfigJson() != null && !n.getNodeConfigJson().isEmpty());
-
-        // DB-based maps (only loaded when needed for fallback)
-        Map<Long, List<BpmnNodeButtonConf>> bpmnNodeButtonConfMap = null;
-        Map<Long, BpmnNodeSignUpConf> bpmnNodeSignUpConfMap = null;
-        Map<Long, List<BpmnTemplateVo>> bpmnTemplateVoMap = null;
-        Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap = null;
-        Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap = new HashMap<>();
-        Map<Long, List<BpmnNodeLfFormdataFieldControl>> bpmnNodeFieldControlConfMap = null;
-
-        if (!allHaveJson) {
-            bpmnNodeButtonConfMap = getBpmnNodeButtonConfMap(idList);
-            bpmnNodeSignUpConfMap = getBpmnNodeSignUpConfMap(idList);
-            bpmnTemplateVoMap = getBpmnTemplateVoMap(idList);
-            bpmnApproveRemindVoMap = getBpmnApproveRemindVoMap(idList);
-
-            Integer isLowCodeFlow = bpmnNodeList.get(0).getIsLowCodeFlow();
-            Integer extraFlags = bpmnNodeList.get(0).getConfExtraFlags();
-            boolean hasNodeLabels = BpmnConfFlagsEnum.HAS_NODE_LABELS.flagsContainsCurrent(extraFlags);
-            if(hasNodeLabels){
-                bpmnNodeLabelsVoMap=getBpmnNodeLabelsVoMap(idList);
-            }
-            if(isLowCodeFlow!=null&&isLowCodeFlow==1){
-                bpmnNodeFieldControlConfMap = getBpmnNodeFieldControlConfMap(idList);
-            }
-        }
-
-        Map<Long, List<BpmnNodeLabel>> finalBpmnNodeLabelsVoMap = bpmnNodeLabelsVoMap;
         List<BpmnNodeVo> bpmnNodeVoList = new ArrayList<>(bpmnNodeList.size());
         for (BpmnNode bpmnNode : bpmnNodeList) {
-            BpmnNodeVo bpmnNodeVo;
-            if (allHaveJson) {
-                bpmnNodeVo = getBpmnNodeVoFromJson(bpmnNode, bpmnNodeToMap, conditionsUrl);
-            } else {
-                bpmnNodeVo = getBpmnNodeVo(bpmnNode, bpmnNodeToMap, bpmnNodeButtonConfMap, bpmnNodeSignUpConfMap,
-                        bpmnTemplateVoMap, bpmnApproveRemindVoMap, bpmnNodeFieldControlConfMap, conditionsUrl, finalBpmnNodeLabelsVoMap);
-            }
+            BpmnNodeVo bpmnNodeVo = getBpmnNodeVoFromJson(bpmnNode, bpmnNodeToMap);
             bpmnNodeVoList.add(bpmnNodeVo);
             //动态条件节点是网关节点,找到网关节点的上一级节点,然后打上标签,流程执行过程中如果有相应标签,则执行动态条件判断
             if(Boolean.TRUE.equals(bpmnNodeVo.getIsDynamicCondition())){
@@ -1768,171 +1724,24 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     }
 
     /**
-     * query notice template by ids
-     *
-     * @param ids ids
-     * @return map
-     */
-    private Map<Long, List<BpmnTemplateVo>> getBpmnTemplateVoMap(List<Long> ids) {
-       throw new AFBizException("migration error,please contact the author");
-    }
-
-    private Map<Long, BpmnApproveRemindVo> getBpmnApproveRemindVoMap(List<Long> ids) {
-        if (ObjectUtils.isEmpty(ids)) {
-            return new HashMap<>();
-        }
-        return bpmnApproveRemindService.getBaseMapper().selectList(
-                        AFWrappers.<BpmnApproveRemind>lambdaTenantQuery()
-                                .in(BpmnApproveRemind::getNodeId, ids))
-                .stream()
-                .collect(Collectors.toMap(
-                        BpmnApproveRemind::getNodeId,
-                        o -> {
-                            BpmnApproveRemindVo vo = new BpmnApproveRemindVo();
-                            vo.setIsInuse(false);
-                            BeanUtils.copyProperties(o, vo);
-                            vo.setTemplateName(Optional
-                                    .ofNullable(informationTemplateService.getBaseMapper().selectById(vo.getTemplateId()))
-                                    .orElse(new InformationTemplate())
-                                    .getName());
-                            if (!ObjectUtils.isEmpty(vo.getDays())) {
-                                vo.setDayList(Arrays.stream(vo.getDays().split(","))
-                                        .map(Integer::parseInt)
-                                        .collect(Collectors.toList()));
-                            }
-                            if (!ObjectUtils.isEmpty(vo.getTemplateId())
-                                    && !ObjectUtils.isEmpty(vo.getDays())) {
-                                vo.setIsInuse(true);
-                            }
-                            return vo;
-                        },
-                        (a, b) -> a));
-    }
-    private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
-       throw new AFBizException("migration error,please contact the author");
-    }
-    /**
-     * get node signup conf map
-     *
-     * @param idList
-     * @return
-     */
-    private Map<Long, BpmnNodeSignUpConf> getBpmnNodeSignUpConfMap(List<Long> idList) {
-        throw new AFBizException("migration error,please contact the author");
-    }
-
-    /**
-     * get button conf map
-     *
-     * @param idList
-     * @return
-     */
-    private Map<Long, List<BpmnNodeButtonConf>> getBpmnNodeButtonConfMap(List<Long> idList) {
-       throw new AFBizException("migration error,please contact the author");
-    }
-
-    private Map<Long,List<BpmnNodeLfFormdataFieldControl>> getBpmnNodeFieldControlConfMap(List<Long> idList){
-        throw new AFBizException("migration error,please contact the author");
-    }
-
-
-
-    /**
-     * convert bpmnnode to nodevo
-     *
-     * @param bpmnNode bpmnNode
-     * @return BpmnNodeVo
-     */
-    private BpmnNodeVo getBpmnNodeVo(BpmnNode bpmnNode, Map<Long, List<String>> bpmnNodeToMap, Map<Long,
-            List<BpmnNodeButtonConf>> bpmnNodeButtonConfMap, Map<Long, BpmnNodeSignUpConf> bpmnNodeSignUpConfMap,
-                                     Map<Long, List<BpmnTemplateVo>> bpmnTemplateVoMap,
-                                     Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap,
-                                     Map<Long, List<BpmnNodeLfFormdataFieldControl>> lfFieldControlMap,
-                                     String conditionsUrl, Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap) {
-
-
-        BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
-        BeanUtils.copyProperties(bpmnNode, bpmnNodeVo);
-
-
-        //set nodeto
-        bpmnNodeVo.setNodeTo(bpmnNodeToMap.get(bpmnNode.getId()));
-
-        //set buttons conf
-        setButtons(bpmnNodeVo, bpmnNodeButtonConfMap.get(bpmnNode.getId()));
-
-        //assign property name
-        bpmnNodeVo.setNodePropertyName(NodePropertyEnum.getDescByCode(bpmnNodeVo.getNodeProperty()));
-
-        //set in node notice template
-        bpmnNodeVo.setTemplateVos(bpmnTemplateVoMap.get(bpmnNode.getId()));
-
-
-        //set in node approvement remind
-        bpmnNodeVo.setApproveRemindVo(bpmnApproveRemindVoMap.get(bpmnNode.getId()));
-
-
-        BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
-
-
-        if (ObjectUtils.isEmpty(bpmnNodeAdpConfEnum)) {
-            return bpmnNodeVo;
-        }
-
-        //get node adaptor
-        BpmnNodeAdaptor bpmnNodeAdaptor = getBpmnNodeAdaptor(bpmnNodeAdpConfEnum);
-
-        //use adaptor to format nodevo
-        bpmnNodeAdaptor.formatToBpmnNodeVo(bpmnNodeVo);
-
-
-        if (NodeTypeEnum.NODE_TYPE_OUT_SIDE_CONDITIONS.getCode().equals(bpmnNode.getNodeType())) {
-            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode());
-        }
-
-        //set sign up conf
-        setBpmnNodeSignUpConf(bpmnNode, bpmnNodeSignUpConfMap, bpmnNodeVo);
-        setFieldControlVOs(bpmnNode,lfFieldControlMap,bpmnNodeVo);
-        List<BpmnNodeLabel> nodeLabels = bpmnNodeLabelsVoMap.get(bpmnNode.getId());
-        if(!CollectionUtils.isEmpty(nodeLabels)){
-            List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelValue(), a.getLabelName())).collect(Collectors.toList());
-            if (NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.copyNodeV2.getLabelValue())) {
-                bpmnNodeVo.setDeduplicationExclude(true);
-                bpmnNodeVo.setIsCarbonCopyNode(true);
-            }
-            if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.automaticNode.getLabelValue())){
-                bpmnNodeVo.setDeduplicationExclude(true);
-                bpmnNodeVo.setIsAutomaticNode(true);
-            }
-            if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.conditionApproveNode.getLabelValue())){
-                bpmnNodeVo.setDeduplicationExclude(true);
-                bpmnNodeVo.setIsConditionApproveNode(true);
-            }
-            if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.conditionCopyNode.getLabelValue())){
-                bpmnNodeVo.setDeduplicationExclude(true);
-                bpmnNodeVo.setIsConditionCopyNode(true);
-            }
-            bpmnNodeVo.setLabelList(labelVOList);
-
-        }
-
-        return bpmnNodeVo;
-    }
-
-    /**
      * convert bpmnnode to nodevo from nodeConfigJson
      */
-    private BpmnNodeVo getBpmnNodeVoFromJson(BpmnNode bpmnNode, Map<Long, List<String>> bpmnNodeToMap, String conditionsUrl) {
+    private BpmnNodeVo getBpmnNodeVoFromJson(BpmnNode bpmnNode, Map<Long, List<String>> bpmnNodeToMap) {
         BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
         BeanUtils.copyProperties(bpmnNode, bpmnNodeVo);
 
         // set nodeto (still from DB — t_bpmn_node_to is kept)
         bpmnNodeVo.setNodeTo(bpmnNodeToMap.get(bpmnNode.getId()));
 
-        // parse node config JSON
-        BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(bpmnNode.getNodeConfigJson());
+        // parse node config JSON. Every node must carry its config as JSON — the legacy
+        // t_bpmn_* relation tables have been dropped, so there is no fallback to read from.
+        String nodeConfigJson = bpmnNode.getNodeConfigJson();
+        if (StringUtils.isEmpty(nodeConfigJson)) {
+            throw new AFBizException("节点[" + bpmnNode.getNodeId() + "]缺少节点配置JSON,请检查数据是否完成JSON化迁移!");
+        }
+        BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(nodeConfigJson);
         if (nodeConfig == null) {
-            return bpmnNodeVo;
+            throw new AFBizException("节点[" + bpmnNode.getNodeId() + "]的节点配置JSON无法解析,请检查数据!");
         }
         bpmnNodeVo.setNodeConfigJsonObj(nodeConfig);
 
@@ -2122,92 +1931,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private BpmnNodeAdaptor getBpmnNodeAdaptor(BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum) {
 
         return adaptorFactory.getBpmnNodeAdaptor(bpmnNodeAdpConfEnum);
-    }
-    /**
-     * set buttons
-     *
-     * @param bpmnNodeVo
-     */
-    private void setButtons(BpmnNodeVo bpmnNodeVo, List<BpmnNodeButtonConf> bpmnNodeButtonConfs) {
-
-        if (!ObjectUtils.isEmpty(bpmnNodeButtonConfs)) {
-
-            BpmnNodeButtonConfBaseVo buttons = new BpmnNodeButtonConfBaseVo();
-            buttons.setStartPage(getButtons(bpmnNodeButtonConfs, ButtonPageTypeEnum.INITIATE));
-            buttons.setApprovalPage(getButtons(bpmnNodeButtonConfs, ButtonPageTypeEnum.AUDIT));
-            buttons.setViewPage(getButtons(bpmnNodeButtonConfs,ButtonPageTypeEnum.TO_VIEW));
-            bpmnNodeVo.setButtons(buttons);
-
-        }
-
-    }
-
-    /**
-     * get buttons list
-     *
-     * @param bpmnNodeButtonConfs
-     * @param buttonPageTypeEnum
-     * @return
-     */
-    private List<BpmnConfCommonButtonPropertyVo> getButtons(List<BpmnNodeButtonConf> bpmnNodeButtonConfs, ButtonPageTypeEnum buttonPageTypeEnum) {
-        return bpmnNodeButtonConfs
-                .stream()
-                .filter(o -> o.getButtonPageType().intValue() == buttonPageTypeEnum.getCode())
-                .map(o -> BpmnConfCommonButtonPropertyVo.builder()
-                        .buttonType(o.getButtonType())
-                        .buttonName(o.getButtonName())
-                        .build())
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-
-    /**
-     * set node sign up conf
-     *
-     * @param bpmnNode
-     * @param bpmnNodeSignUpConfMap
-     * @param bpmnNodeVo
-     */
-    private void setBpmnNodeSignUpConf(BpmnNode bpmnNode, Map<Long, BpmnNodeSignUpConf> bpmnNodeSignUpConfMap, BpmnNodeVo bpmnNodeVo) {
-        if (bpmnNode.getIsSignUp() != 1) {
-            return;
-        }
-        BpmnNodeSignUpConf bpmnNodeSignUpConf = bpmnNodeSignUpConfMap.get(bpmnNode.getId());
-        if (ObjectUtils.isEmpty(bpmnNodeSignUpConf)) {
-            return;
-        }
-        BpmnNodePropertysVo propertysVo = bpmnNodeVo.getProperty();
-        if (ObjectUtils.isEmpty(propertysVo)) {
-            propertysVo = new BpmnNodePropertysVo();
-        }
-        propertysVo.setAfterSignUpWay(bpmnNodeSignUpConf.getAfterSignUpWay());
-        propertysVo.setSignUpType(bpmnNodeSignUpConf.getSignUpType());
-        bpmnNodeVo.setProperty(propertysVo);
-    }
-
-    private void setFieldControlVOs(BpmnNode bpmnNode,Map<Long,List<BpmnNodeLfFormdataFieldControl>> fieldControlMap,BpmnNodeVo nodeVo){
-        boolean isLowFlow=Objects.equals(bpmnNode.getIsLowCodeFlow(),1);
-        if(!isLowFlow){
-            return;
-        }
-        if(CollectionUtils.isEmpty(fieldControlMap)){
-
-            return;
-        }
-        List<BpmnNodeLfFormdataFieldControl> fieldControls = fieldControlMap.get(bpmnNode.getId());
-        if(CollectionUtils.isEmpty(fieldControls)){
-            return;
-        }
-        List<LFFieldControlVO> fieldControlVOS=new ArrayList<>();
-        for (BpmnNodeLfFormdataFieldControl fieldControl : fieldControls) {
-            LFFieldControlVO lfFieldControlVO=new LFFieldControlVO();
-            lfFieldControlVO.setFieldId(fieldControl.getFieldId());
-            lfFieldControlVO.setFieldName(fieldControl.getFieldName());
-            lfFieldControlVO.setPerm(fieldControl.getPerm());
-            fieldControlVOS.add(lfFieldControlVO);
-        }
-        nodeVo.setLfFieldControlVOs(fieldControlVOS);
     }
     private Integer getIsAll(BpmnConf bpmnConf, BpmnConf beforeBpmnConf) {
         if (bpmnConf.getIsOutSideProcess() == 1) {
