@@ -116,4 +116,6 @@ public interface WorkflowButtonOperationHandler {
      * @param businessData
      */
     void onProcessRecover(BusinessDataVo businessData);
+
+    void onSaveDraft(BusinessDataVo businessData);
 }

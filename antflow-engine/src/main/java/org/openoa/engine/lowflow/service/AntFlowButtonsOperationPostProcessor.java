@@ -96,6 +96,9 @@ public class AntFlowButtonsOperationPostProcessor implements AntFlowOrderPostPro
             case BUTTON_TYPE_OPPOSE:
                 workflowButtonHandler.onOppose(vo);
                 break;
+            case BUTTON_TYPE_SAVE_DRAFT:
+                workflowButtonHandler.onSaveDraft(vo);
+                break;
             default:
                 throw new UnsupportedOperationException("不支持的操作类型: " + poEnum);
         }
